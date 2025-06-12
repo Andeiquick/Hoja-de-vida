@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargador de Videos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glow-effect {
+            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 30px #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <!-- Título y Descripción -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Descargador de Videos Online</h1>
+            <p class="text-gray-400 text-lg">Pega el enlace de tu video de YouTube para comenzar.</p>
+        </div>
+
+        <!-- Barra de Búsqueda -->
+        <div class="flex flex-col sm:flex-row items-center gap-2 mb-8">
+            <div class="relative flex-grow w-full">
+                <i class="fas fa-link absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+            </div>
+            <button id="fetchBtn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 rounded-lg px-8 py-3 font-semibold transition duration-300 glow-effect flex items-center justify-center gap-2">
+                <i class="fas fa-search"></i>
+                <span>Buscar</span>
+            </button>
+        </div>
+
+        <!-- Contenedor de Resultados -->
+        <div id="resultsContainer" class="bg-gray-800 p-6 rounded-lg border border-gray-700 hidden">
+            <!-- Spinner/Loader -->
+            <div id="loader" class="text-center hidden">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+                <p class="mt-2 text-gray-400">Procesando enlace...</p>
+            </div>
+            <!-- Detalles del Video -->
+            <div id="videoDetails" class="hidden">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <img id="thumbnail" src="https://placehold.co/320x180/1f2937/a0aec0?text=Video" alt="Miniatura del video" class="w-full md:w-48 h-auto rounded-lg object-cover">
+                    <div class="flex-grow">
+                        <h2 id="videoTitle" class="text-xl font-bold mb-2">Título del Video Aparecerá Aquí</h2>
+                        <p id="videoAuthor" class="text-gray-400 mb-4">Nombre del Canal</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">MP4</span>
+                             <span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">720p</span>
+                             <span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">1080p</span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-gray-700 my-6">
+                <!-- Opciones de Descarga -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Opciones de Descarga</h3>
+                    <div class="space-y-3">
+                        <button class="download-option w-full flex justify-between items-center bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition duration-300">
+                            <span>Video (1080p) - MP4</span>
+                            <i class="fas fa-download text-blue-400"></i>
+                        </button>
+                        <button class="download-option w-full flex justify-between items-center bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition duration-300">
+                            <span>Video (720p) - MP4</span>
+                            <i class="fas fa-download text-blue-400"></i>
+                        </button>
+                         <button class="download-option w-full flex justify-between items-center bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition duration-300">
+                            <span>Audio (128kbps) - MP3</span>
+                            <i class="fas fa-download text-blue-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nota legal -->
+        <div class="text-center mt-8 text-gray-500 text-sm">
+            <p><i class="fas fa-info-circle mr-1"></i><strong>Nota Importante:</strong> La descarga de videos de YouTube sin el permiso del propietario del contenido viola sus Términos de Servicio. Esta herramienta es solo una demostración.</p>
+        </div>
+    </div>
+
+    <!-- Modal de Advertencia -->
+    <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-gray-800 rounded-xl shadow-2xl p-6 max-w-sm w-full border border-yellow-500">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-500 mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl text-white"></i>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">Aviso de Derechos de Autor</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-400">
+                        Descargar videos de YouTube sin el consentimiento del creador va en contra de los Términos de Servicio de la plataforma y puede infringir las leyes de derechos de autor.
+                    </p>
+                    <p class="text-sm text-gray-400 mt-2">
+                        Por favor, respeta el trabajo de los creadores. Esta función ha sido desactivada.
+                    </p>
+                </div>
+                <div class="mt-4">
+                    <button id="closeModalBtn" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                        Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fetchBtn = document.getElementById('fetchBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const loader = document.getElementById('loader');
+        const videoDetails = document.getElementById('videoDetails');
+        const warningModal = document.getElementById('warningModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const downloadButtons = document.querySelectorAll('.download-option');
+        const videoUrlInput = document.getElementById('videoUrl');
+
+        // Simula la búsqueda y muestra los resultados
+        fetchBtn.addEventListener('click', () => {
+            if (!videoUrlInput.value.trim()) {
+                // Opcional: mostrar un error si el campo está vacío
+                alert('Por favor, pega una URL de YouTube.');
+                return;
+            }
+
+            resultsContainer.style.display = 'block';
+            videoDetails.style.display = 'none';
+            loader.style.display = 'block';
+
+            // Simular una llamada a la API
+            setTimeout(() => {
+                loader.style.display = 'none';
+                videoDetails.style.display = 'block';
+                // Aquí podrías usar una API para obtener datos reales del video
+                // y actualizar la miniatura, título, etc.
+            }, 2000);
+        });
+
+        // Muestra el modal de advertencia al hacer clic en descargar
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                warningModal.style.display = 'flex';
+            });
+        });
+
+        // Cierra el modal de advertencia
+        closeModalBtn.addEventListener('click', () => {
+            warningModal.style.display = 'none';
+        });
+
+        // Cierra el modal si se hace clic fuera de él
+        window.addEventListener('click', (event) => {
+            if (event.target == warningModal) {
+                warningModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
