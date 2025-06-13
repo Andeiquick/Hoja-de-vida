@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compresor de Imágenes</title>
+    <title>Compresor de Imágenes por Lotes</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -18,111 +19,116 @@
             border-color: #3b82f6;
             background-color: #2d3748;
         }
-        /* Estilos personalizados para el control deslizante (slider) */
-        input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 8px;
-            background: #4a5568;
-            border-radius: 5px;
-            outline: none;
-            transition: opacity .2s;
-        }
         input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #3b82f6;
-            cursor: pointer;
-            border-radius: 50%;
-            box-shadow: 0 0 5px #3b82f6;
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px;
+            background: #3b82f6; cursor: pointer;
+            border-radius: 50%; box-shadow: 0 0 5px #3b82f6;
         }
         input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #3b82f6;
-            cursor: pointer;
-            border-radius: 50%;
-            border: none;
+            width: 20px; height: 20px;
+            background: #3b82f6; cursor: pointer;
+            border-radius: 50%; border: none;
             box-shadow: 0 0 5px #3b82f6;
+        }
+        .loader {
+            border-top-color: #3b82f6;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-4xl mx-auto">
+    <div class="w-full max-w-5xl mx-auto">
         <!-- Título y Descripción -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Compresor de Imágenes</h1>
-            <p class="text-gray-400 text-lg">Reduce el tamaño de tus archivos JPG y PNG directamente en tu navegador.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Compresor de Imágenes por Lotes</h1>
+            <p class="text-gray-400 text-lg">Reduce el tamaño de tus archivos JPG, PNG y WEBP. Descarga todo en un ZIP.</p>
         </div>
 
-        <!-- Pantalla Principal: Carga de Archivos -->
+        <!-- Pantalla de Carga de Archivos -->
         <div id="uploadScreen">
             <div id="dragArea" class="drag-area w-full p-10 text-center rounded-xl cursor-pointer transition-all duration-300 hover:bg-gray-800">
-                <i class="fas fa-cloud-upload-alt text-5xl text-gray-500 mb-4"></i>
-                <h2 class="text-2xl font-semibold mb-2">Arrastra y suelta tu imagen aquí</h2>
+                <i class="fas fa-images text-5xl text-gray-500 mb-4"></i>
+                <h2 class="text-2xl font-semibold mb-2">Arrastra y suelta tus imágenes aquí</h2>
                 <p class="text-gray-500">o</p>
                 <button id="browseBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold transition duration-300">
-                    Selecciona un archivo
+                    Seleccionar archivos
                 </button>
-                <input type="file" id="fileInput" class="hidden" accept="image/jpeg, image/png">
+                <input type="file" id="fileInput" class="hidden" accept="image/jpeg, image/png, image/webp" multiple>
             </div>
-            <p id="uploadError" class="text-red-500 text-center mt-4 hidden">Error: Por favor, sube un archivo JPG o PNG.</p>
+            <p id="uploadError" class="text-red-500 text-center mt-4 hidden">Error: Por favor, sube solo archivos JPG, PNG o WEBP.</p>
         </div>
 
-        <!-- Pantalla de Resultados: Compresión -->
+        <!-- Pantalla de Resultados -->
         <div id="resultScreen" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Imagen Original -->
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <h3 class="font-bold text-lg mb-2 text-center">Original</h3>
-                    <img id="originalImage" src="" alt="Imagen Original" class="rounded-md w-full h-auto object-contain max-h-96">
-                    <p class="text-center mt-2 text-gray-400">Tamaño: <span id="originalSize" class="font-semibold text-white">0 KB</span></p>
+             <!-- Controles de Compresión -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 mb-8">
+                <div id="qualityControl" class="w-full">
+                    <label for="qualitySlider" class="block mb-2 font-medium">Calidad para JPG/WEBP: <span id="qualityValue" class="font-bold text-blue-400">0.75</span></label>
+                    <input type="range" id="qualitySlider" min="0.1" max="1" step="0.05" value="0.75" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
                 </div>
-
-                <!-- Imagen Comprimida -->
-                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                    <h3 class="font-bold text-lg mb-2 text-center">Comprimida</h3>
-                    <img id="compressedImage" src="https://placehold.co/600x400/1f2937/a0aec0?text=Comprimida" alt="Imagen Comprimida" class="rounded-md w-full h-auto object-contain max-h-96">
-                    <p class="text-center mt-2 text-gray-400">Tamaño: <span id="compressedSize" class="font-semibold text-white">0 KB</span></p>
+                 <div id="processingIndicator" class="text-center mt-4 hidden">
+                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto"></div>
+                    <p class="mt-2 text-gray-400">Recomprimiendo imágenes...</p>
                 </div>
             </div>
-            
-            <!-- Controles y Resultados -->
-            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 mt-8">
-                <div class="flex flex-col md:flex-row items-center justify-between">
-                    <!-- Controles de Calidad (solo para JPG) -->
-                    <div id="qualityControl" class="w-full md:w-1/2 mb-4 md:mb-0">
-                        <label for="qualitySlider" class="block mb-2 font-medium">Calidad JPG: <span id="qualityValue">0.7</span></label>
-                        <input type="range" id="qualitySlider" min="0.1" max="1" step="0.05" value="0.7">
+
+            <!-- Lista de Imágenes -->
+            <div id="imageList" class="space-y-4 mb-8">
+                <!-- Las tarjetas de imagen se insertarán aquí -->
+            </div>
+
+            <!-- Resumen y Acciones -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+                <div class="flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+                    <div>
+                        <p class="text-lg">Total de Imágenes: <span id="totalImages" class="font-bold text-white">0</span></p>
+                        <p class="text-gray-400">Tamaño Original: <span id="totalOriginalSize" class="font-semibold text-white">0 KB</span></p>
                     </div>
-                    
-                    <!-- Información de Reducción -->
-                    <div class="text-center md:text-right">
-                        <p class="text-lg">Reducción de tamaño</p>
-                        <p id="reductionPercentage" class="text-3xl font-bold text-green-400">0%</p>
+                    <div class="my-4 md:my-0">
+                         <p class="text-lg text-green-400">Reducción Total</p>
+                         <p id="totalReduction" class="text-3xl font-bold text-green-400">0%</p>
+                    </div>
+                    <div>
+                        <p class="text-lg">Nuevo Tamaño: <span id="totalCompressedSize" class="font-bold text-white">0 KB</span></p>
                     </div>
                 </div>
-
                 <hr class="border-gray-700 my-6">
-
-                <!-- Botones de Acción -->
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a id="downloadBtn" href="#" download="imagen-comprimida.jpg" class="flex-1 text-center bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2">
-                        <i class="fas fa-download"></i>
-                        <span>Descargar</span>
-                    </a>
-                     <button id="startOverBtn" class="flex-1 bg-gray-600 hover:bg-gray-500 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2">
+                    <button id="downloadZipBtn" class="flex-1 text-center bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                        <i class="fas fa-file-archive"></i>
+                        <span>Descargar Todo (ZIP)</span>
+                    </button>
+                    <button id="startOverBtn" class="flex-1 bg-gray-600 hover:bg-gray-500 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2">
                         <i class="fas fa-sync-alt"></i>
-                        <span>Comprimir otra</span>
+                        <span>Empezar de Nuevo</span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Plantilla para tarjeta de imagen -->
+    <template id="imageCardTemplate">
+        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 flex items-center gap-4">
+            <img class="thumbnail w-16 h-16 object-cover rounded-md bg-gray-700" src="https://placehold.co/64x64/2d3748/a0aec0?text=IMG" alt="miniatura">
+            <div class="flex-grow">
+                <p class="filename font-semibold truncate">nombre_de_archivo.jpg</p>
+                <div class="flex flex-wrap text-sm text-gray-400 gap-x-4">
+                    <span>Original: <span class="original-size font-medium text-white">0 KB</span></span>
+                    <span>Comprimido: <span class="compressed-size font-medium text-white">0 KB</span></span>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="reduction-percentage font-bold text-green-400 text-lg">0%</p>
+            </div>
+        </div>
+    </template>
+
 
     <script>
         // Elementos del DOM
@@ -132,146 +138,177 @@
         const browseBtn = document.getElementById('browseBtn');
         const fileInput = document.getElementById('fileInput');
         const uploadError = document.getElementById('uploadError');
-
-        const originalImage = document.getElementById('originalImage');
-        const compressedImage = document.getElementById('compressedImage');
-        const originalSize = document.getElementById('originalSize');
-        const compressedSize = document.getElementById('compressedSize');
         
         const qualityControl = document.getElementById('qualityControl');
         const qualitySlider = document.getElementById('qualitySlider');
         const qualityValue = document.getElementById('qualityValue');
-        const reductionPercentage = document.getElementById('reductionPercentage');
-        
-        const downloadBtn = document.getElementById('downloadBtn');
+        const processingIndicator = document.getElementById('processingIndicator');
+
+        const imageList = document.getElementById('imageList');
+        const imageCardTemplate = document.getElementById('imageCardTemplate');
+
+        const totalImages = document.getElementById('totalImages');
+        const totalOriginalSize = document.getElementById('totalOriginalSize');
+        const totalCompressedSize = document.getElementById('totalCompressedSize');
+        const totalReduction = document.getElementById('totalReduction');
+
+        const downloadZipBtn = document.getElementById('downloadZipBtn');
         const startOverBtn = document.getElementById('startOverBtn');
 
-        let originalFile = null;
-        let imageType = '';
+        let imageFiles = []; // Almacenará { originalFile, compressedBlob, ... }
 
-        // --- Lógica para arrastrar y soltar ---
-        dragArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dragArea.classList.add('active');
-        });
-
-        dragArea.addEventListener('dragleave', () => {
-            dragArea.classList.remove('active');
-        });
-
+        // --- Lógica de Carga de Archivos ---
+        dragArea.addEventListener('dragover', (e) => { e.preventDefault(); dragArea.classList.add('active'); });
+        dragArea.addEventListener('dragleave', () => dragArea.classList.remove('active'));
         dragArea.addEventListener('drop', (e) => {
             e.preventDefault();
             dragArea.classList.remove('active');
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                handleFile(file);
-            }
+            handleFiles(e.dataTransfer.files);
         });
 
-        // --- Lógica para el botón de selección de archivo ---
         browseBtn.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
-        });
-        
-        // --- Manejo del archivo seleccionado ---
-        function handleFile(file) {
-            const validTypes = ['image/jpeg', 'image/png'];
-            if (!validTypes.includes(file.type)) {
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        async function handleFiles(files) {
+            const validFiles = Array.from(files).filter(file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type));
+            
+            if (validFiles.length === 0) {
                 uploadError.style.display = 'block';
                 return;
             }
             uploadError.style.display = 'none';
-            originalFile = file;
-            imageType = file.type;
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                originalImage.src = e.target.result;
-                originalSize.textContent = formatBytes(originalFile.size);
-                
-                // Mostrar la pantalla de resultados
-                uploadScreen.style.display = 'none';
-                resultScreen.style.display = 'block';
-
-                // Ajustar controles según el tipo de imagen
-                if (imageType === 'image/png') {
-                    qualityControl.style.display = 'none'; // No hay control de calidad para PNG en canvas
-                } else {
-                    qualityControl.style.display = 'block';
-                }
-                
-                compressImage();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // --- Función principal de compresión ---
-        function compressImage() {
-            if (!originalFile) return;
+            
+            uploadScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            processingIndicator.style.display = 'block';
+            downloadZipBtn.disabled = true;
 
             const quality = parseFloat(qualitySlider.value);
-            qualityValue.textContent = quality;
+            const compressionPromises = validFiles.map(file => compressFile(file, quality));
+            
+            imageFiles = await Promise.all(compressionPromises);
 
-            const img = new Image();
-            img.src = originalImage.src;
-
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-
-                canvas.width = img.width;
-                canvas.height = img.height;
-
-                // Dibujar la imagen en el canvas
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                // Obtener la URL de datos de la imagen comprimida.
-                // Para JPEG, podemos pasar un segundo argumento 'quality'.
-                // Para PNG, el navegador realiza una compresión sin pérdida por defecto.
-                const compressedDataUrl = canvas.toDataURL(imageType, imageType === 'image/jpeg' ? quality : undefined);
-                
-                compressedImage.src = compressedDataUrl;
-                
-                // Actualizar la información de la UI
-                updateCompressionInfo(compressedDataUrl);
-            };
+            processingIndicator.style.display = 'none';
+            downloadZipBtn.disabled = false;
+            renderResults();
         }
 
-        // --- Actualizar la información en la UI ---
-        function updateCompressionInfo(dataUrl) {
-            const compressedFileBlob = dataURLtoBlob(dataUrl);
-            const compressedFileSize = compressedFileBlob.size;
+        // --- Lógica de Compresión ---
+        function compressFile(file, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.naturalWidth;
+                        canvas.height = img.naturalHeight;
+                        ctx.drawImage(img, 0, 0);
 
-            compressedSize.textContent = formatBytes(compressedFileSize);
-            
-            const reduction = 100 - (compressedFileSize / originalFile.size * 100);
-            reductionPercentage.textContent = `${reduction.toFixed(1)}%`;
-            
-            // Actualizar el botón de descarga
-            const extension = imageType.split('/')[1];
-            downloadBtn.href = dataUrl;
-            downloadBtn.download = `imagen-comprimida.${extension}`;
+                        // Usa el tipo de archivo original, pero usa calidad para jpg/webp
+                        const mimeType = file.type;
+                        const dataUrl = canvas.toDataURL(mimeType, ['image/jpeg', 'image/webp'].includes(mimeType) ? quality : undefined);
+                        
+                        const blob = dataURLtoBlob(dataUrl);
+                        resolve({
+                            originalFile: file,
+                            thumbnailSrc: dataUrl,
+                            compressedBlob: blob,
+                        });
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
         }
         
-        // --- Event Listeners para controles ---
-        qualitySlider.addEventListener('input', compressImage);
+        // --- Renderizado y UI ---
+        function renderResults() {
+            imageList.innerHTML = '';
+            let accOriginalSize = 0;
+            let accCompressedSize = 0;
 
-        startOverBtn.addEventListener('click', () => {
-            // Reiniciar el estado
-            originalFile = null;
-            fileInput.value = ''; // Limpiar el input de archivo
-            resultScreen.style.display = 'none';
-            uploadScreen.style.display = 'block';
-            originalImage.src = '';
-            compressedImage.src = 'https://placehold.co/600x400/1f2937/a0aec0?text=Comprimida';
-            qualitySlider.value = '0.7';
+            imageFiles.forEach(fileData => {
+                const card = imageCardTemplate.content.cloneNode(true);
+                const originalSize = fileData.originalFile.size;
+                const compressedSize = fileData.compressedBlob.size;
+                const reduction = 100 - (compressedSize / originalSize * 100);
+
+                card.querySelector('.thumbnail').src = fileData.thumbnailSrc;
+                card.querySelector('.filename').textContent = fileData.originalFile.name;
+                card.querySelector('.original-size').textContent = formatBytes(originalSize);
+                card.querySelector('.compressed-size').textContent = formatBytes(compressedSize);
+                card.querySelector('.reduction-percentage').textContent = `${reduction.toFixed(1)}%`;
+                
+                imageList.appendChild(card);
+                
+                accOriginalSize += originalSize;
+                accCompressedSize += compressedSize;
+            });
+            
+            // Actualizar resumen
+            totalImages.textContent = imageFiles.length;
+            totalOriginalSize.textContent = formatBytes(accOriginalSize);
+            totalCompressedSize.textContent = formatBytes(accCompressedSize);
+
+            const totalReductionValue = accOriginalSize > 0 ? 100 - (accCompressedSize / accOriginalSize * 100) : 0;
+            totalReduction.textContent = `${totalReductionValue.toFixed(1)}%`;
+        }
+        
+        async function recompressAll() {
+             if (imageFiles.length === 0) return;
+             
+             processingIndicator.style.display = 'block';
+             downloadZipBtn.disabled = true;
+
+             const quality = parseFloat(qualitySlider.value);
+             const recompressPromises = imageFiles.map(fileData => compressFile(fileData.originalFile, quality));
+             
+             imageFiles = await Promise.all(recompressPromises);
+             
+             processingIndicator.style.display = 'none';
+             downloadZipBtn.disabled = false;
+             renderResults();
+        }
+        
+        qualitySlider.addEventListener('input', () => {
+            qualityValue.textContent = qualitySlider.value;
+        });
+        qualitySlider.addEventListener('change', recompressAll);
+
+        // --- Descarga y Reinicio ---
+        downloadZipBtn.addEventListener('click', () => {
+            const zip = new JSZip();
+            imageFiles.forEach(fileData => {
+                const originalName = fileData.originalFile.name;
+                const nameParts = originalName.split('.');
+                nameParts.pop(); // remove extension
+                const newName = `${nameParts.join('.')}-comprimido.${fileData.compressedBlob.type.split('/')[1]}`;
+                zip.file(newName, fileData.compressedBlob);
+            });
+            
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = "imagenes_comprimidas.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         });
 
-        // --- Funciones de utilidad ---
+        startOverBtn.addEventListener('click', () => {
+            imageFiles = [];
+            fileInput.value = '';
+            resultScreen.style.display = 'none';
+            uploadScreen.style.display = 'block';
+            imageList.innerHTML = '';
+        });
+
+        // --- Funciones de Utilidad ---
         function formatBytes(bytes, decimals = 2) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -282,15 +319,14 @@
         }
 
         function dataURLtoBlob(dataurl) {
-            const arr = dataurl.split(',');
-            const mime = arr[0].match(/:(.*?);/)[1];
-            const bstr = atob(arr[1]);
+            const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]);
             let n = bstr.length;
             const u8arr = new Uint8Array(n);
             while (n--) {
                 u8arr[n] = bstr.charCodeAt(n);
             }
-            return new Blob([u8arr], { type: mime });
+            return new Blob([u8arr], {type: mime});
         }
     </script>
 </body>
