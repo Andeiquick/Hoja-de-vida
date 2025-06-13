@@ -142,23 +142,7 @@
             }, 2000);
         });
 
-        // Muestra el modal de advertencia al hacer clic en descargar
-        downloadButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                warningModal.style.display = 'flex';
-            });
-        });
-
-        // Cierra el modal de advertencia
-        closeModalBtn.addEventListener('click', () => {
-            warningModal.style.display = 'none';
-        });
-
-        // Cierra el modal si se hace clic fuera de él
-        window.addEventListener('click', (event) => {
-            if (event.target == warningModal) {
-                warningModal.style.display = 'none';
-            }
+    
         });
     </script>
 </body>
