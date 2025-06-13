@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compresor y Conversor de Imágenes Profesional</title>
+    <title>Compresor de Imágenes Automático (50%)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,24 +19,6 @@
             border-color: #3b82f6;
             background-color: #2d3748;
         }
-        input[type="range"] {
-            -webkit-appearance: none; appearance: none;
-            width: 100%; height: 8px;
-            background: #4a5568; border-radius: 5px;
-            outline: none; transition: opacity .2s;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 20px; height: 20px;
-            background: #3b82f6; cursor: pointer;
-            border-radius: 50%; box-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 20px; height: 20px;
-            background: #3b82f6; cursor: pointer;
-            border-radius: 50%; border: none;
-            box-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
-        }
         .loader {
             border-top-color: #3b82f6;
             animation: spin 1s linear infinite;
@@ -49,8 +31,8 @@
     <div class="w-full max-w-5xl mx-auto">
         <!-- Título y Descripción -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Conversor y Compresor de Imágenes</h1>
-            <p class="text-gray-400 text-lg">Una herramienta profesional para optimizar JPG, PNG, WEBP, GIF, BMP, TIFF y SVG.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Compresor de Imágenes Automático</h1>
+            <p class="text-gray-400 text-lg">Optimiza tus imágenes con una compresión fija del 50% al instante.</p>
         </div>
 
         <!-- Pantalla de Carga de Archivos -->
@@ -71,31 +53,9 @@
         <div id="resultScreen" class="hidden">
             <div id="processingIndicator" class="text-center my-8 hidden">
                 <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto"></div>
-                <p class="mt-2 text-gray-400">Procesando imágenes...</p>
+                <p class="mt-2 text-gray-400">Optimizando imágenes...</p>
             </div>
             
-            <!-- Controles Globales -->
-            <div id="globalControls" class="bg-gray-800 p-4 rounded-lg border border-gray-700 mb-6 hidden">
-                <h3 class="text-lg font-semibold mb-3 text-center">Controles Globales (para JPG/WEBP)</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div>
-                        <label for="globalFormat" class="block text-sm font-medium text-gray-400 mb-1">Convertir todo a</label>
-                        <select id="globalFormat" class="w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                            <option value="image/jpeg">JPG</option>
-                            <option value="image/png">PNG</option>
-                            <option value="image/webp">WEBP</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="globalQuality" class="block text-sm font-medium text-gray-400 mb-1">Calidad Global: <span id="globalQualityValue">0.75</span></label>
-                        <input type="range" id="globalQuality" class="w-full" min="0.01" max="0.75" step="0.01" value="0.75">
-                    </div>
-                    <button id="applyGlobalBtn" title="Aplicar esta configuración a todas las imágenes" class="bg-blue-600 hover:bg-blue-700 h-10 rounded-lg font-semibold transition duration-300 flex items-center justify-center">
-                        Aplicar a Todo
-                    </button>
-                </div>
-            </div>
-
             <!-- Lista de Imágenes -->
             <div id="imageList" class="space-y-4 mb-8"></div>
 
@@ -135,7 +95,7 @@
             <button class="remove-btn absolute top-2 right-2 text-gray-500 hover:text-white transition-colors z-10" title="Eliminar imagen">
                  <i class="fas fa-times-circle fa-lg"></i>
             </button>
-            <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
+            <div class="flex flex-col sm:flex-row items-center gap-4">
                 <img class="thumbnail w-20 h-20 object-contain rounded-md bg-gray-700" src="https://placehold.co/80x80/2d3748/a0aec0?text=IMG" alt="miniatura">
                 <div class="flex-grow w-full">
                     <p class="filename font-semibold truncate text-center sm:text-left">nombre_de_archivo.jpg</p>
@@ -144,20 +104,6 @@
                         <span>Comprimido: <span class="compressed-size font-medium text-white">0 KB</span></span>
                         <span class="reduction-percentage-wrapper">Ahorro: <span class="reduction-percentage font-bold text-green-400">0%</span></span>
                     </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-700 pt-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Formato de Salida</label>
-                    <select class="format-select w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <option value="image/jpeg">JPG</option>
-                        <option value="image/png">PNG</option>
-                        <option value="image/webp">WEBP</option>
-                    </select>
-                </div>
-                <div class="quality-control-container">
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Calidad: <span class="quality-value">0.75</span></label>
-                    <input type="range" class="quality-slider w-full" min="0.01" max="0.75" step="0.01" value="0.75">
                 </div>
             </div>
         </div>
@@ -175,13 +121,6 @@
         const imageList = document.getElementById('imageList');
         const imageCardTemplate = document.getElementById('imageCardTemplate');
         
-        // Global controls
-        const globalControls = document.getElementById('globalControls');
-        const globalFormatSelect = document.getElementById('globalFormat');
-        const globalQualitySlider = document.getElementById('globalQuality');
-        const globalQualityValue = document.getElementById('globalQualityValue');
-        const applyGlobalBtn = document.getElementById('applyGlobalBtn');
-
         // Summary elements & Action buttons
         const totalImages = document.getElementById('totalImages');
         const totalOriginalSize = document.getElementById('totalOriginalSize');
@@ -193,7 +132,7 @@
         // In-memory store and constants
         let imageStore = [];
         const VALID_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/tiff', 'image/svg+xml'];
-        const INITIAL_QUALITY = 0.75;
+        const FIXED_QUALITY = 0.50; // Calidad fija para JPG y WEBP
 
         // --- Event Listeners ---
         dragArea.addEventListener('dragover', (e) => { e.preventDefault(); dragArea.classList.add('active'); });
@@ -207,8 +146,6 @@
         fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
         startOverBtn.addEventListener('click', resetApp);
         downloadBtn.addEventListener('click', handleDownload);
-        applyGlobalBtn.addEventListener('click', applyGlobalSettings);
-        globalQualitySlider.addEventListener('input', () => { globalQualityValue.textContent = globalQualitySlider.value; });
 
         // --- Core Functions ---
         async function handleFiles(files) {
@@ -233,7 +170,7 @@
                 const card = createCard(id, file);
                 imageList.appendChild(card);
                 
-                const imageData = { id, card, originalFile: file, outputType: getInitialOutputType(file), quality: INITIAL_QUALITY, compressedBlob: null, thumbnailSrc: null };
+                const imageData = { id, card, originalFile: file, compressedBlob: null, thumbnailSrc: null };
                 
                 imageStore.push(imageData);
                 return recompressImage(id);
@@ -248,41 +185,7 @@
             const card = imageCardTemplate.content.cloneNode(true).querySelector('.card-container');
             card.dataset.id = id;
             card.querySelector('.filename').textContent = file.name;
-            
-            const formatSelect = card.querySelector('.format-select');
-            const qualityControl = card.querySelector('.quality-control-container');
-            const qualitySlider = card.querySelector('.quality-slider');
-            const qualityValue = card.querySelector('.quality-value');
-
-            qualitySlider.value = INITIAL_QUALITY;
-            qualitySlider.max = INITIAL_QUALITY;
-            qualityValue.textContent = INITIAL_QUALITY;
-
-            if (file.type === 'image/svg+xml') {
-                formatSelect.innerHTML = `<option value="image/svg+xml">SVG</option>`;
-                formatSelect.disabled = true;
-                qualityControl.style.display = 'none';
-            } else {
-                formatSelect.value = getInitialOutputType(file);
-                toggleQualitySlider(card, formatSelect.value);
-            }
-
-            formatSelect.addEventListener('change', (e) => {
-                const image = imageStore.find(img => img.id === id);
-                image.outputType = e.target.value;
-                toggleQualitySlider(card, image.outputType);
-                recompressImage(id);
-            });
-            
-            qualitySlider.addEventListener('input', (e) => { qualityValue.textContent = e.target.value; });
-            qualitySlider.addEventListener('change', (e) => {
-                const image = imageStore.find(img => img.id === id);
-                image.quality = parseFloat(e.target.value);
-                recompressImage(id);
-            });
-
             card.querySelector('.remove-btn').addEventListener('click', () => removeImage(id));
-            
             return card;
         }
         
@@ -291,9 +194,10 @@
                 const image = imageStore.find(img => img.id === id);
                 if (!image) return resolve();
 
-                const { originalFile, outputType, quality } = image;
+                const { originalFile } = image;
+                const outputType = getOutputType(originalFile);
                 
-                if (originalFile.type === 'image/svg+xml') {
+                if (outputType === 'image/svg+xml') {
                     const svgText = await readFileAsText(originalFile);
                     let minifiedSvg = svgText.replace(/<!--[\s\S]*?-->/g, "").replace(/>\s{1,}</g, "><").replace(/\s{2,}/g, " ").trim();
                     image.compressedBlob = new Blob([minifiedSvg], { type: 'image/svg+xml' });
@@ -309,7 +213,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0);
 
-                    const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? quality : undefined);
+                    const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? FIXED_QUALITY : undefined);
                     const compressedBlob = dataURLtoBlob(compressedDataUrl);
                     
                     if (outputType === 'image/png' && compressedBlob.size > originalFile.size) {
@@ -323,35 +227,6 @@
                 updateTotalSummary();
                 resolve();
             });
-        }
-        
-        async function applyGlobalSettings() {
-            const globalFormat = globalFormatSelect.value;
-            const globalQuality = parseFloat(globalQualitySlider.value);
-
-            processingIndicator.style.display = 'block';
-            downloadBtn.disabled = true;
-
-            const recompressPromises = imageStore.map(image => {
-                if (image.originalFile.type !== 'image/svg+xml') {
-                    image.outputType = globalFormat;
-                    image.quality = globalQuality;
-                    
-                    image.card.querySelector('.format-select').value = globalFormat;
-                    const qualitySlider = image.card.querySelector('.quality-slider');
-                    qualitySlider.value = globalQuality;
-                    qualitySlider.max = globalQuality;
-                    image.card.querySelector('.quality-value').textContent = globalQuality;
-                    toggleQualitySlider(image.card, globalFormat);
-                    
-                    return recompressImage(image.id);
-                }
-                return Promise.resolve();
-            });
-            
-            await Promise.all(recompressPromises);
-            processingIndicator.style.display = 'none';
-            downloadBtn.disabled = false;
         }
 
         function removeImage(id) {
@@ -379,7 +254,6 @@
         function updateCardUI(image) {
             const { card, originalFile, compressedBlob, thumbnailSrc } = image;
             if (!card || !compressedBlob) return;
-
             card.querySelector('.thumbnail').src = thumbnailSrc;
             card.querySelector('.original-size').textContent = formatBytes(originalFile.size);
             const compressedSize = compressedBlob.size;
@@ -397,11 +271,9 @@
 
         function updateTotalSummary() {
             let totalOriginal = 0, totalCompressed = 0;
-            let hasRasterImages = false;
             imageStore.forEach(img => {
                 totalOriginal += img.originalFile.size;
                 if (img.compressedBlob) totalCompressed += img.compressedBlob.size;
-                if(img.originalFile.type !== 'image/svg+xml') hasRasterImages = true;
             });
 
             totalImages.textContent = imageStore.length;
@@ -409,8 +281,6 @@
             totalCompressedSize.textContent = formatBytes(totalCompressed);
             totalReduction.textContent = `${(totalOriginal > 0 ? 100 - (totalCompressed / totalOriginal * 100) : 0).toFixed(1)}%`;
             
-            globalControls.style.display = hasRasterImages ? 'block' : 'none';
-
             const buttonSpan = downloadBtn.querySelector('span');
             const buttonIcon = downloadBtn.querySelector('i');
             if (imageStore.length === 1) {
@@ -422,13 +292,9 @@
             }
         }
 
-        function toggleQualitySlider(card, mimeType) {
-            card.querySelector('.quality-control-container').style.display = mimeType === 'image/png' ? 'none' : 'block';
-        }
-
-        function getInitialOutputType(file) {
-            const selectableOutputs = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
-            if (selectableOutputs.includes(file.type)) {
+        function getOutputType(file) {
+            const supportedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'];
+            if (supportedTypes.includes(file.type)) {
                 return file.type;
             }
             return 'image/png'; // Default for GIF, BMP, TIFF
@@ -439,7 +305,7 @@
 
             if (imageStore.length === 1) {
                 const image = imageStore[0];
-                const extension = image.compressedBlob.type.split('/')[1].replace('+xml', 'svg');
+                const extension = getOutputType(image.originalFile).split('/')[1].replace('+xml', 'svg');
                 const originalName = image.originalFile.name.split('.').slice(0, -1).join('.');
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(image.compressedBlob);
@@ -451,7 +317,7 @@
             } else {
                 const zip = new JSZip();
                 imageStore.forEach(image => {
-                    const extension = image.compressedBlob.type.split('/')[1].replace('+xml', 'svg');
+                    const extension = getOutputType(image.originalFile).split('/')[1].replace('+xml', 'svg');
                     const originalName = image.originalFile.name.split('.').slice(0, -1).join('.');
                     zip.file(`${originalName}-comprimido.${extension}`, image.compressedBlob);
                 });
