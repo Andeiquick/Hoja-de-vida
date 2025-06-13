@@ -103,7 +103,7 @@
                 </div>
                 <hr class="border-gray-700 my-6">
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <button id="downloadZipBtn" class="flex-1 text-center bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                    <button id="downloadBtn" class="flex-1 text-center bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2 disabled:bg-gray-500 disabled:cursor-not-allowed">
                         <i class="fas fa-file-archive"></i>
                         <span>Descargar Todo (ZIP)</span>
                     </button>
@@ -167,7 +167,7 @@
         const totalReduction = document.getElementById('totalReduction');
         
         // Action buttons
-        const downloadZipBtn = document.getElementById('downloadZipBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
         const startOverBtn = document.getElementById('startOverBtn');
         
         // In-memory store for all image data and states
@@ -197,12 +197,10 @@
             uploadScreen.style.display = 'none';
             resultScreen.style.display = 'block';
             processingIndicator.style.display = 'block';
-            downloadZipBtn.disabled = true;
+            downloadBtn.disabled = true;
 
-            for (const file of validFiles) {
-                const id = `img_${Date.now()}_${Math.random()}`;
-                
-                // Add placeholder card immediately for better UX
+            const newFilesPromises = validFiles.map(async file => {
+                 const id = `img_${Date.now()}_${Math.random()}`;
                 const card = createCard(id, file);
                 imageList.appendChild(card);
                 
@@ -210,25 +208,25 @@
                     id: id,
                     card: card,
                     originalFile: file,
-                    outputType: 'image/jpeg', // Default to a common format like JPG
-                    quality: 0.75, // Default quality
+                    outputType: 'image/jpeg',
+                    quality: 0.75,
                     compressedBlob: null,
                     thumbnailSrc: null
                 };
-                 // If original is PNG, default output to PNG to preserve transparency
+
                 if (file.type === 'image/png') {
                     imageData.outputType = 'image/png';
                 }
                 card.querySelector('.format-select').value = imageData.outputType;
-
                 
                 imageStore.push(imageData);
-            }
-            // Use Promise.all to wait for all initial compressions to finish
-            await Promise.all(imageStore.map(img => recompressImage(img.id, true)));
+                return recompressImage(id);
+            });
+            
+            await Promise.all(newFilesPromises);
 
             processingIndicator.style.display = 'none';
-            downloadZipBtn.disabled = false;
+            downloadBtn.disabled = false;
         }
 
         // --- Card Creation and Event Binding ---
@@ -255,12 +253,12 @@
                 recompressImage(id);
             });
             
-            toggleQualitySlider(card, 'image/jpeg'); // Start with default
+            toggleQualitySlider(card, 'image/jpeg'); // Default state
             return card;
         }
         
         // --- Compression Logic ---
-        function recompressImage(id, isInitial = false) {
+        function recompressImage(id) {
              return new Promise(async (resolve) => {
                 const image = imageStore.find(img => img.id === id);
                 if (!image) return resolve();
@@ -273,7 +271,6 @@
                 }
                 
                 const img = await loadImage(dataUrl);
-
                 const canvas = document.createElement('canvas');
                 canvas.width = img.naturalWidth;
                 canvas.height = img.naturalHeight;
@@ -281,12 +278,17 @@
                 ctx.drawImage(img, 0, 0);
 
                 const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? quality : undefined);
-                image.compressedBlob = dataURLtoBlob(compressedDataUrl);
+                const compressedBlob = dataURLtoBlob(compressedDataUrl);
                 
-                // Update UI for this specific card
+                // *** INTELLIGENT PNG LOGIC ***
+                // If output is PNG and the new file is larger, use the original file instead.
+                if (outputType === 'image/png' && compressedBlob.size > originalFile.size) {
+                    image.compressedBlob = originalFile;
+                } else {
+                    image.compressedBlob = compressedBlob;
+                }
+                
                 updateCardUI(image);
-
-                // Update the global summary
                 updateTotalSummary();
                 resolve();
             });
@@ -296,12 +298,22 @@
         function updateCardUI(image) {
             const { card, originalFile, compressedBlob, thumbnailSrc } = image;
             if (!card || !compressedBlob) return;
-
             card.querySelector('.thumbnail').src = thumbnailSrc;
             card.querySelector('.original-size').textContent = formatBytes(originalFile.size);
-            card.querySelector('.compressed-size').textContent = formatBytes(compressedBlob.size);
-            const reduction = 100 - (compressedBlob.size / originalFile.size * 100);
-            card.querySelector('.reduction-percentage').textContent = `${reduction.toFixed(1)}%`;
+
+            const originalSize = originalFile.size;
+            const compressedSize = compressedBlob.size;
+            card.querySelector('.compressed-size').textContent = formatBytes(compressedSize);
+            
+            let reduction = 0;
+            if (compressedSize < originalSize) {
+                reduction = 100 - (compressedSize / originalSize * 100);
+            }
+
+            const reductionSpan = card.querySelector('.reduction-percentage');
+            reductionSpan.textContent = `${reduction.toFixed(1)}%`;
+            reductionSpan.classList.toggle('text-green-400', reduction > 0);
+            reductionSpan.classList.toggle('text-yellow-400', reduction <= 0);
         }
 
         function updateTotalSummary() {
@@ -309,9 +321,7 @@
             let totalCompressed = 0;
             imageStore.forEach(img => {
                 totalOriginal += img.originalFile.size;
-                if (img.compressedBlob) {
-                    totalCompressed += img.compressedBlob.size;
-                }
+                if (img.compressedBlob) totalCompressed += img.compressedBlob.size;
             });
 
             totalImages.textContent = imageStore.length;
@@ -320,37 +330,63 @@
 
             const totalReductionValue = totalOriginal > 0 ? 100 - (totalCompressed / totalOriginal * 100) : 0;
             totalReduction.textContent = `${totalReductionValue.toFixed(1)}%`;
+            
+            // Dynamically change download button text and icon
+            const buttonSpan = downloadBtn.querySelector('span');
+            const buttonIcon = downloadBtn.querySelector('i');
+            if (imageStore.length === 1) {
+                buttonSpan.textContent = 'Descargar Imagen';
+                buttonIcon.className = 'fas fa-download';
+            } else {
+                buttonSpan.textContent = 'Descargar Todo (ZIP)';
+                buttonIcon.className = 'fas fa-file-archive';
+            }
         }
 
         function toggleQualitySlider(card, mimeType) {
             const container = card.querySelector('.quality-control-container');
-            if (mimeType === 'image/png') {
-                container.style.display = 'none';
-            } else {
-                container.style.display = 'block';
-            }
+            container.style.display = mimeType === 'image/png' ? 'none' : 'block';
         }
         
         // --- Actions: Download and Reset ---
-        downloadZipBtn.addEventListener('click', () => {
-            const zip = new JSZip();
-            imageStore.forEach(image => {
-                const originalName = image.originalFile.name;
-                const nameParts = originalName.split('.');
-                nameParts.pop(); // remove extension
+        downloadBtn.addEventListener('click', () => {
+            if (imageStore.length === 0 || !imageStore.every(img => img.compressedBlob)) return;
+
+            if (imageStore.length === 1) {
+                // Single image download
+                const image = imageStore[0];
+                const originalName = image.originalFile.name.split('.').slice(0, -1).join('.');
                 const extension = image.outputType.split('/')[1];
-                const newName = `${nameParts.join('.')}-comprimido.${extension}`;
-                zip.file(newName, image.compressedBlob);
-            });
-            
-            zip.generateAsync({type:"blob"}).then(function(content) {
+                const newName = `${originalName}-comprimido.${extension}`;
+                
                 const link = document.createElement('a');
-                link.href = URL.createObjectURL(content);
-                link.download = `imagenes-comprimidas-${Date.now()}.zip`;
+                link.href = URL.createObjectURL(image.compressedBlob);
+                link.download = newName;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-            });
+                URL.revokeObjectURL(link.href);
+
+            } else {
+                // Multiple images download as ZIP
+                const zip = new JSZip();
+                imageStore.forEach(image => {
+                    const originalName = image.originalFile.name.split('.').slice(0, -1).join('.');
+                    const extension = image.outputType.split('/')[1];
+                    const newName = `${originalName}-comprimido.${extension}`;
+                    zip.file(newName, image.compressedBlob);
+                });
+                
+                zip.generateAsync({type:"blob"}).then(function(content) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = `imagenes-comprimidas-${Date.now()}.zip`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                });
+            }
         });
 
         startOverBtn.addEventListener('click', () => {
