@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descargador de Videos</title>
+    <title>Compresor de Imágenes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,100 +11,113 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        .glow-effect {
-            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6, 0 0 30px #3b82f6;
+        .drag-area {
+            border: 3px dashed #4a5568;
+        }
+        .drag-area.active {
+            border-color: #3b82f6;
+            background-color: #2d3748;
+        }
+        /* Estilos personalizados para el control deslizante (slider) */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #4a5568;
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #3b82f6;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 0 5px #3b82f6;
         }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-2xl mx-auto">
+    <div class="w-full max-w-4xl mx-auto">
         <!-- Título y Descripción -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">Descargador de Videos Online</h1>
-            <p class="text-gray-400 text-lg">Pega el enlace de tu video de YouTube para comenzar.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Compresor de Imágenes</h1>
+            <p class="text-gray-400 text-lg">Reduce el tamaño de tus archivos JPG y PNG directamente en tu navegador.</p>
         </div>
 
-        <!-- Barra de Búsqueda -->
-        <div class="flex flex-col sm:flex-row items-center gap-2 mb-8">
-            <div class="relative flex-grow w-full">
-                <i class="fas fa-link absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+        <!-- Pantalla Principal: Carga de Archivos -->
+        <div id="uploadScreen">
+            <div id="dragArea" class="drag-area w-full p-10 text-center rounded-xl cursor-pointer transition-all duration-300 hover:bg-gray-800">
+                <i class="fas fa-cloud-upload-alt text-5xl text-gray-500 mb-4"></i>
+                <h2 class="text-2xl font-semibold mb-2">Arrastra y suelta tu imagen aquí</h2>
+                <p class="text-gray-500">o</p>
+                <button id="browseBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold transition duration-300">
+                    Selecciona un archivo
+                </button>
+                <input type="file" id="fileInput" class="hidden" accept="image/jpeg, image/png">
             </div>
-            <button id="fetchBtn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 rounded-lg px-8 py-3 font-semibold transition duration-300 glow-effect flex items-center justify-center gap-2">
-                <i class="fas fa-search"></i>
-                <span>Buscar</span>
-            </button>
+            <p id="uploadError" class="text-red-500 text-center mt-4 hidden">Error: Por favor, sube un archivo JPG o PNG.</p>
         </div>
 
-        <!-- Contenedor de Resultados -->
-        <div id="resultsContainer" class="bg-gray-800 p-6 rounded-lg border border-gray-700 hidden">
-            <!-- Spinner/Loader -->
-            <div id="loader" class="text-center hidden">
-                <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
-                <p class="mt-2 text-gray-400">Procesando enlace...</p>
+        <!-- Pantalla de Resultados: Compresión -->
+        <div id="resultScreen" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Imagen Original -->
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <h3 class="font-bold text-lg mb-2 text-center">Original</h3>
+                    <img id="originalImage" src="" alt="Imagen Original" class="rounded-md w-full h-auto object-contain max-h-96">
+                    <p class="text-center mt-2 text-gray-400">Tamaño: <span id="originalSize" class="font-semibold text-white">0 KB</span></p>
+                </div>
+
+                <!-- Imagen Comprimida -->
+                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                    <h3 class="font-bold text-lg mb-2 text-center">Comprimida</h3>
+                    <img id="compressedImage" src="https://placehold.co/600x400/1f2937/a0aec0?text=Comprimida" alt="Imagen Comprimida" class="rounded-md w-full h-auto object-contain max-h-96">
+                    <p class="text-center mt-2 text-gray-400">Tamaño: <span id="compressedSize" class="font-semibold text-white">0 KB</span></p>
+                </div>
             </div>
-            <!-- Detalles del Video -->
-            <div id="videoDetails" class="hidden">
-                <div class="flex flex-col md:flex-row gap-6">
-                    <img id="thumbnail" src="https://placehold.co/320x180/1f2937/a0aec0?text=Video" alt="Miniatura del video" class="w-full md:w-48 h-auto rounded-lg object-cover">
-                    <div class="flex-grow">
-                        <h2 id="videoTitle" class="text-xl font-bold mb-2">Título del Video Aparecerá Aquí</h2>
-                        <p id="videoAuthor" class="text-gray-400 mb-4">Nombre del Canal</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">MP4</span>
-                             <span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">720p</span>
-                             <span class="bg-gray-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">1080p</span>
-                        </div>
+            
+            <!-- Controles y Resultados -->
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 mt-8">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <!-- Controles de Calidad (solo para JPG) -->
+                    <div id="qualityControl" class="w-full md:w-1/2 mb-4 md:mb-0">
+                        <label for="qualitySlider" class="block mb-2 font-medium">Calidad JPG: <span id="qualityValue">0.7</span></label>
+                        <input type="range" id="qualitySlider" min="0.1" max="1" step="0.05" value="0.7">
+                    </div>
+                    
+                    <!-- Información de Reducción -->
+                    <div class="text-center md:text-right">
+                        <p class="text-lg">Reducción de tamaño</p>
+                        <p id="reductionPercentage" class="text-3xl font-bold text-green-400">0%</p>
                     </div>
                 </div>
+
                 <hr class="border-gray-700 my-6">
-                <!-- Opciones de Descarga -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Opciones de Descarga</h3>
-                    <div class="space-y-3">
-                        <button class="download-option w-full flex justify-between items-center bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition duration-300">
-                            <span>Video (1080p) - MP4</span>
-                            <i class="fas fa-download text-blue-400"></i>
-                        </button>
-                        <button class="download-option w-full flex justify-between items-center bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition duration-300">
-                            <span>Video (720p) - MP4</span>
-                            <i class="fas fa-download text-blue-400"></i>
-                        </button>
-                         <button class="download-option w-full flex justify-between items-center bg-gray-700 hover:bg-gray-600 p-3 rounded-lg transition duration-300">
-                            <span>Audio (128kbps) - MP3</span>
-                            <i class="fas fa-download text-blue-400"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Nota legal -->
-        <div class="text-center mt-8 text-gray-500 text-sm">
-            <p><i class="fas fa-info-circle mr-1"></i><strong>Nota Importante:</strong> La descarga de videos de YouTube sin el permiso del propietario del contenido viola sus Términos de Servicio. Esta herramienta es solo una demostración.</p>
-        </div>
-    </div>
-
-    <!-- Modal de Advertencia -->
-    <div id="warningModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-gray-800 rounded-xl shadow-2xl p-6 max-w-sm w-full border border-yellow-500">
-            <div class="text-center">
-                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-500 mb-4">
-                    <i class="fas fa-exclamation-triangle text-2xl text-white"></i>
-                </div>
-                <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">Aviso de Derechos de Autor</h3>
-                <div class="mt-2 px-7 py-3">
-                    <p class="text-sm text-gray-400">
-                        Descargar videos de YouTube sin el consentimiento del creador va en contra de los Términos de Servicio de la plataforma y puede infringir las leyes de derechos de autor.
-                    </p>
-                    <p class="text-sm text-gray-400 mt-2">
-                        Por favor, respeta el trabajo de los creadores. Esta función ha sido desactivada.
-                    </p>
-                </div>
-                <div class="mt-4">
-                    <button id="closeModalBtn" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
-                        Entendido
+                <!-- Botones de Acción -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a id="downloadBtn" href="#" download="imagen-comprimida.jpg" class="flex-1 text-center bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2">
+                        <i class="fas fa-download"></i>
+                        <span>Descargar</span>
+                    </a>
+                     <button id="startOverBtn" class="flex-1 bg-gray-600 hover:bg-gray-500 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Comprimir otra</span>
                     </button>
                 </div>
             </div>
@@ -112,38 +125,173 @@
     </div>
 
     <script>
-        const fetchBtn = document.getElementById('fetchBtn');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const loader = document.getElementById('loader');
-        const videoDetails = document.getElementById('videoDetails');
-        const warningModal = document.getElementById('warningModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const downloadButtons = document.querySelectorAll('.download-option');
-        const videoUrlInput = document.getElementById('videoUrl');
+        // Elementos del DOM
+        const uploadScreen = document.getElementById('uploadScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const dragArea = document.getElementById('dragArea');
+        const browseBtn = document.getElementById('browseBtn');
+        const fileInput = document.getElementById('fileInput');
+        const uploadError = document.getElementById('uploadError');
 
-        // Simula la búsqueda y muestra los resultados
-        fetchBtn.addEventListener('click', () => {
-            if (!videoUrlInput.value.trim()) {
-                // Opcional: mostrar un error si el campo está vacío
-                alert('Por favor, pega una URL de YouTube.');
+        const originalImage = document.getElementById('originalImage');
+        const compressedImage = document.getElementById('compressedImage');
+        const originalSize = document.getElementById('originalSize');
+        const compressedSize = document.getElementById('compressedSize');
+        
+        const qualityControl = document.getElementById('qualityControl');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const reductionPercentage = document.getElementById('reductionPercentage');
+        
+        const downloadBtn = document.getElementById('downloadBtn');
+        const startOverBtn = document.getElementById('startOverBtn');
+
+        let originalFile = null;
+        let imageType = '';
+
+        // --- Lógica para arrastrar y soltar ---
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dragArea.classList.add('active');
+        });
+
+        dragArea.addEventListener('dragleave', () => {
+            dragArea.classList.remove('active');
+        });
+
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dragArea.classList.remove('active');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // --- Lógica para el botón de selección de archivo ---
+        browseBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+        
+        // --- Manejo del archivo seleccionado ---
+        function handleFile(file) {
+            const validTypes = ['image/jpeg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                uploadError.style.display = 'block';
                 return;
             }
+            uploadError.style.display = 'none';
+            originalFile = file;
+            imageType = file.type;
 
-            resultsContainer.style.display = 'block';
-            videoDetails.style.display = 'none';
-            loader.style.display = 'block';
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalImage.src = e.target.result;
+                originalSize.textContent = formatBytes(originalFile.size);
+                
+                // Mostrar la pantalla de resultados
+                uploadScreen.style.display = 'none';
+                resultScreen.style.display = 'block';
 
-            // Simular una llamada a la API
-            setTimeout(() => {
-                loader.style.display = 'none';
-                videoDetails.style.display = 'block';
-                // Aquí podrías usar una API para obtener datos reales del video
-                // y actualizar la miniatura, título, etc.
-            }, 2000);
+                // Ajustar controles según el tipo de imagen
+                if (imageType === 'image/png') {
+                    qualityControl.style.display = 'none'; // No hay control de calidad para PNG en canvas
+                } else {
+                    qualityControl.style.display = 'block';
+                }
+                
+                compressImage();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- Función principal de compresión ---
+        function compressImage() {
+            if (!originalFile) return;
+
+            const quality = parseFloat(qualitySlider.value);
+            qualityValue.textContent = quality;
+
+            const img = new Image();
+            img.src = originalImage.src;
+
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                // Dibujar la imagen en el canvas
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // Obtener la URL de datos de la imagen comprimida.
+                // Para JPEG, podemos pasar un segundo argumento 'quality'.
+                // Para PNG, el navegador realiza una compresión sin pérdida por defecto.
+                const compressedDataUrl = canvas.toDataURL(imageType, imageType === 'image/jpeg' ? quality : undefined);
+                
+                compressedImage.src = compressedDataUrl;
+                
+                // Actualizar la información de la UI
+                updateCompressionInfo(compressedDataUrl);
+            };
+        }
+
+        // --- Actualizar la información en la UI ---
+        function updateCompressionInfo(dataUrl) {
+            const compressedFileBlob = dataURLtoBlob(dataUrl);
+            const compressedFileSize = compressedFileBlob.size;
+
+            compressedSize.textContent = formatBytes(compressedFileSize);
+            
+            const reduction = 100 - (compressedFileSize / originalFile.size * 100);
+            reductionPercentage.textContent = `${reduction.toFixed(1)}%`;
+            
+            // Actualizar el botón de descarga
+            const extension = imageType.split('/')[1];
+            downloadBtn.href = dataUrl;
+            downloadBtn.download = `imagen-comprimida.${extension}`;
+        }
+        
+        // --- Event Listeners para controles ---
+        qualitySlider.addEventListener('input', compressImage);
+
+        startOverBtn.addEventListener('click', () => {
+            // Reiniciar el estado
+            originalFile = null;
+            fileInput.value = ''; // Limpiar el input de archivo
+            resultScreen.style.display = 'none';
+            uploadScreen.style.display = 'block';
+            originalImage.src = '';
+            compressedImage.src = 'https://placehold.co/600x400/1f2937/a0aec0?text=Comprimida';
+            qualitySlider.value = '0.7';
         });
 
-    
-        });
+        // --- Funciones de utilidad ---
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function dataURLtoBlob(dataurl) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
     </script>
 </body>
 </html>
