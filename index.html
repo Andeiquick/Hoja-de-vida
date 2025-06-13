@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compresor de Imágenes por Lotes</title>
+    <title>Compresor y Conversor de Imágenes Avanzado</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,17 +19,28 @@
             border-color: #3b82f6;
             background-color: #2d3748;
         }
+        /* Estilos para todos los sliders */
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #4a5568;
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none;
             width: 20px; height: 20px;
             background: #3b82f6; cursor: pointer;
-            border-radius: 50%; box-shadow: 0 0 5px #3b82f6;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
         }
         input[type="range"]::-moz-range-thumb {
             width: 20px; height: 20px;
             background: #3b82f6; cursor: pointer;
             border-radius: 50%; border: none;
-            box-shadow: 0 0 5px #3b82f6;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.7);
         }
         .loader {
             border-top-color: #3b82f6;
@@ -45,8 +56,8 @@
     <div class="w-full max-w-5xl mx-auto">
         <!-- Título y Descripción -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Compresor de Imágenes por Lotes</h1>
-            <p class="text-gray-400 text-lg">Reduce el tamaño de tus archivos JPG, PNG y WEBP. Descarga todo en un ZIP.</p>
+            <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Conversor y Compresor de Imágenes</h1>
+            <p class="text-gray-400 text-lg">Control individual para cada imagen. Convierte a JPG, PNG y WEBP.</p>
         </div>
 
         <!-- Pantalla de Carga de Archivos -->
@@ -65,25 +76,18 @@
 
         <!-- Pantalla de Resultados -->
         <div id="resultScreen" class="hidden">
-             <!-- Controles de Compresión -->
-            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 mb-8">
-                <div id="qualityControl" class="w-full">
-                    <label for="qualitySlider" class="block mb-2 font-medium">Calidad para JPG/WEBP: <span id="qualityValue" class="font-bold text-blue-400">0.75</span></label>
-                    <input type="range" id="qualitySlider" min="0.1" max="1" step="0.05" value="0.75" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                </div>
-                 <div id="processingIndicator" class="text-center mt-4 hidden">
-                    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto"></div>
-                    <p class="mt-2 text-gray-400">Recomprimiendo imágenes...</p>
-                </div>
+            <div id="processingIndicator" class="text-center my-8 hidden">
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto"></div>
+                <p class="mt-2 text-gray-400">Procesando imágenes...</p>
             </div>
-
+            
             <!-- Lista de Imágenes -->
             <div id="imageList" class="space-y-4 mb-8">
                 <!-- Las tarjetas de imagen se insertarán aquí -->
             </div>
 
             <!-- Resumen y Acciones -->
-            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700">
+            <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 sticky bottom-4 shadow-2xl">
                 <div class="flex flex-col md:flex-row items-center justify-between text-center md:text-left">
                     <div>
                         <p class="text-lg">Total de Imágenes: <span id="totalImages" class="font-bold text-white">0</span></p>
@@ -114,50 +118,62 @@
 
     <!-- Plantilla para tarjeta de imagen -->
     <template id="imageCardTemplate">
-        <div class="bg-gray-800 p-4 rounded-lg border border-gray-700 flex items-center gap-4">
-            <img class="thumbnail w-16 h-16 object-cover rounded-md bg-gray-700" src="https://placehold.co/64x64/2d3748/a0aec0?text=IMG" alt="miniatura">
-            <div class="flex-grow">
-                <p class="filename font-semibold truncate">nombre_de_archivo.jpg</p>
-                <div class="flex flex-wrap text-sm text-gray-400 gap-x-4">
-                    <span>Original: <span class="original-size font-medium text-white">0 KB</span></span>
-                    <span>Comprimido: <span class="compressed-size font-medium text-white">0 KB</span></span>
+        <div class="card-container bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
+                <img class="thumbnail w-20 h-20 object-cover rounded-md bg-gray-700" src="https://placehold.co/80x80/2d3748/a0aec0?text=IMG" alt="miniatura">
+                <div class="flex-grow w-full">
+                    <p class="filename font-semibold truncate text-center sm:text-left">nombre_de_archivo.jpg</p>
+                    <div class="flex flex-wrap text-sm text-gray-400 gap-x-4 mt-1 justify-center sm:justify-start">
+                        <span>Original: <span class="original-size font-medium text-white">0 KB</span></span>
+                        <span>Comprimido: <span class="compressed-size font-medium text-white">0 KB</span></span>
+                        <span class="reduction-percentage-wrapper">Ahorro: <span class="reduction-percentage font-bold text-green-400">0%</span></span>
+                    </div>
                 </div>
             </div>
-            <div class="text-right">
-                <p class="reduction-percentage font-bold text-green-400 text-lg">0%</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-700 pt-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Formato de Salida</label>
+                    <select class="format-select w-full bg-gray-700 border border-gray-600 rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="image/jpeg">JPG</option>
+                        <option value="image/png">PNG</option>
+                        <option value="image/webp">WEBP</option>
+                    </select>
+                </div>
+                <div class="quality-control-container">
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Calidad: <span class="quality-value">0.75</span></label>
+                    <input type="range" class="quality-slider w-full" min="0.1" max="1" step="0.05" value="0.75">
+                </div>
             </div>
         </div>
     </template>
 
 
     <script>
-        // Elementos del DOM
+        // DOM Elements
         const uploadScreen = document.getElementById('uploadScreen');
         const resultScreen = document.getElementById('resultScreen');
         const dragArea = document.getElementById('dragArea');
         const browseBtn = document.getElementById('browseBtn');
         const fileInput = document.getElementById('fileInput');
         const uploadError = document.getElementById('uploadError');
-        
-        const qualityControl = document.getElementById('qualityControl');
-        const qualitySlider = document.getElementById('qualitySlider');
-        const qualityValue = document.getElementById('qualityValue');
         const processingIndicator = document.getElementById('processingIndicator');
-
         const imageList = document.getElementById('imageList');
         const imageCardTemplate = document.getElementById('imageCardTemplate');
-
+        
+        // Summary elements
         const totalImages = document.getElementById('totalImages');
         const totalOriginalSize = document.getElementById('totalOriginalSize');
         const totalCompressedSize = document.getElementById('totalCompressedSize');
         const totalReduction = document.getElementById('totalReduction');
-
+        
+        // Action buttons
         const downloadZipBtn = document.getElementById('downloadZipBtn');
         const startOverBtn = document.getElementById('startOverBtn');
+        
+        // In-memory store for all image data and states
+        let imageStore = [];
 
-        let imageFiles = []; // Almacenará { originalFile, compressedBlob, ... }
-
-        // --- Lógica de Carga de Archivos ---
+        // --- Drag & Drop / File Selection Logic ---
         dragArea.addEventListener('dragover', (e) => { e.preventDefault(); dragArea.classList.add('active'); });
         dragArea.addEventListener('dragleave', () => dragArea.classList.remove('active'));
         dragArea.addEventListener('drop', (e) => {
@@ -165,135 +181,167 @@
             dragArea.classList.remove('active');
             handleFiles(e.dataTransfer.files);
         });
-
         browseBtn.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
         async function handleFiles(files) {
-            const validFiles = Array.from(files).filter(file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type));
-            
+            const validFiles = Array.from(files).filter(f => ['image/jpeg', 'image/png', 'image/webp'].includes(f.type));
             if (validFiles.length === 0) {
                 uploadError.style.display = 'block';
                 return;
             }
             uploadError.style.display = 'none';
-            
             uploadScreen.style.display = 'none';
             resultScreen.style.display = 'block';
             processingIndicator.style.display = 'block';
             downloadZipBtn.disabled = true;
 
-            const quality = parseFloat(qualitySlider.value);
-            const compressionPromises = validFiles.map(file => compressFile(file, quality));
-            
-            imageFiles = await Promise.all(compressionPromises);
+            for (const file of validFiles) {
+                const id = `img_${Date.now()}_${Math.random()}`;
+                
+                // Add placeholder card immediately for better UX
+                const card = createCard(id, file);
+                imageList.appendChild(card);
+                
+                const imageData = {
+                    id: id,
+                    card: card,
+                    originalFile: file,
+                    outputType: file.type, // Default to original type
+                    quality: 0.75, // Default quality
+                    compressedBlob: null,
+                    thumbnailSrc: null
+                };
+                
+                imageStore.push(imageData);
+                
+                // Start compression for this file
+                recompressImage(id); 
+            }
+            // Use Promise.all to wait for all initial compressions to finish
+            await Promise.all(imageStore.map(img => recompressImage(img.id, true)));
 
             processingIndicator.style.display = 'none';
             downloadZipBtn.disabled = false;
-            renderResults();
         }
 
-        // --- Lógica de Compresión ---
-        function compressFile(file, quality) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = img.naturalWidth;
-                        canvas.height = img.naturalHeight;
-                        ctx.drawImage(img, 0, 0);
-
-                        // Usa el tipo de archivo original, pero usa calidad para jpg/webp
-                        const mimeType = file.type;
-                        const dataUrl = canvas.toDataURL(mimeType, ['image/jpeg', 'image/webp'].includes(mimeType) ? quality : undefined);
-                        
-                        const blob = dataURLtoBlob(dataUrl);
-                        resolve({
-                            originalFile: file,
-                            thumbnailSrc: dataUrl,
-                            compressedBlob: blob,
-                        });
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-            });
-        }
-        
-        // --- Renderizado y UI ---
-        function renderResults() {
-            imageList.innerHTML = '';
-            let accOriginalSize = 0;
-            let accCompressedSize = 0;
-
-            imageFiles.forEach(fileData => {
-                const card = imageCardTemplate.content.cloneNode(true);
-                const originalSize = fileData.originalFile.size;
-                const compressedSize = fileData.compressedBlob.size;
-                const reduction = 100 - (compressedSize / originalSize * 100);
-
-                card.querySelector('.thumbnail').src = fileData.thumbnailSrc;
-                card.querySelector('.filename').textContent = fileData.originalFile.name;
-                card.querySelector('.original-size').textContent = formatBytes(originalSize);
-                card.querySelector('.compressed-size').textContent = formatBytes(compressedSize);
-                card.querySelector('.reduction-percentage').textContent = `${reduction.toFixed(1)}%`;
-                
-                imageList.appendChild(card);
-                
-                accOriginalSize += originalSize;
-                accCompressedSize += compressedSize;
+        // --- Card Creation and Event Binding ---
+        function createCard(id, file) {
+            const card = imageCardTemplate.content.cloneNode(true).querySelector('.card-container');
+            card.dataset.id = id;
+            card.querySelector('.filename').textContent = file.name;
+            
+            const formatSelect = card.querySelector('.format-select');
+            formatSelect.value = file.type; // Set default format
+            formatSelect.addEventListener('change', (e) => {
+                const image = imageStore.find(img => img.id === id);
+                image.outputType = e.target.value;
+                toggleQualitySlider(card, image.outputType);
+                recompressImage(id);
             });
             
-            // Actualizar resumen
-            totalImages.textContent = imageFiles.length;
-            totalOriginalSize.textContent = formatBytes(accOriginalSize);
-            totalCompressedSize.textContent = formatBytes(accCompressedSize);
+            const qualitySlider = card.querySelector('.quality-slider');
+            qualitySlider.addEventListener('input', (e) => {
+                card.querySelector('.quality-value').textContent = e.target.value;
+            });
+            qualitySlider.addEventListener('change', (e) => {
+                const image = imageStore.find(img => img.id === id);
+                image.quality = parseFloat(e.target.value);
+                recompressImage(id);
+            });
+            
+            toggleQualitySlider(card, file.type);
+            return card;
+        }
+        
+        // --- Compression Logic ---
+        function recompressImage(id, isInitial = false) {
+             return new Promise(async (resolve) => {
+                const image = imageStore.find(img => img.id === id);
+                if (!image) return resolve();
 
-            const totalReductionValue = accOriginalSize > 0 ? 100 - (accCompressedSize / accOriginalSize * 100) : 0;
+                const { originalFile, outputType, quality } = image;
+
+                const dataUrl = image.thumbnailSrc || await readFileAsDataURL(originalFile);
+                if (!image.thumbnailSrc) {
+                    image.thumbnailSrc = dataUrl;
+                }
+                
+                const img = await loadImage(dataUrl);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? quality : undefined);
+                image.compressedBlob = dataURLtoBlob(compressedDataUrl);
+                
+                // Update UI for this specific card
+                updateCardUI(image);
+
+                // Update the global summary
+                updateTotalSummary();
+                resolve();
+            });
+        }
+        
+        // --- UI Update Functions ---
+        function updateCardUI(image) {
+            const { card, originalFile, compressedBlob, thumbnailSrc } = image;
+            if (!card || !compressedBlob) return;
+
+            card.querySelector('.thumbnail').src = thumbnailSrc;
+            card.querySelector('.original-size').textContent = formatBytes(originalFile.size);
+            card.querySelector('.compressed-size').textContent = formatBytes(compressedBlob.size);
+            const reduction = 100 - (compressedBlob.size / originalFile.size * 100);
+            card.querySelector('.reduction-percentage').textContent = `${reduction.toFixed(1)}%`;
+        }
+
+        function updateTotalSummary() {
+            let totalOriginal = 0;
+            let totalCompressed = 0;
+            imageStore.forEach(img => {
+                totalOriginal += img.originalFile.size;
+                if (img.compressedBlob) {
+                    totalCompressed += img.compressedBlob.size;
+                }
+            });
+
+            totalImages.textContent = imageStore.length;
+            totalOriginalSize.textContent = formatBytes(totalOriginal);
+            totalCompressedSize.textContent = formatBytes(totalCompressed);
+
+            const totalReductionValue = totalOriginal > 0 ? 100 - (totalCompressed / totalOriginal * 100) : 0;
             totalReduction.textContent = `${totalReductionValue.toFixed(1)}%`;
         }
-        
-        async function recompressAll() {
-             if (imageFiles.length === 0) return;
-             
-             processingIndicator.style.display = 'block';
-             downloadZipBtn.disabled = true;
 
-             const quality = parseFloat(qualitySlider.value);
-             const recompressPromises = imageFiles.map(fileData => compressFile(fileData.originalFile, quality));
-             
-             imageFiles = await Promise.all(recompressPromises);
-             
-             processingIndicator.style.display = 'none';
-             downloadZipBtn.disabled = false;
-             renderResults();
+        function toggleQualitySlider(card, mimeType) {
+            const container = card.querySelector('.quality-control-container');
+            if (mimeType === 'image/png') {
+                container.style.display = 'none';
+            } else {
+                container.style.display = 'block';
+            }
         }
         
-        qualitySlider.addEventListener('input', () => {
-            qualityValue.textContent = qualitySlider.value;
-        });
-        qualitySlider.addEventListener('change', recompressAll);
-
-        // --- Descarga y Reinicio ---
+        // --- Actions: Download and Reset ---
         downloadZipBtn.addEventListener('click', () => {
             const zip = new JSZip();
-            imageFiles.forEach(fileData => {
-                const originalName = fileData.originalFile.name;
+            imageStore.forEach(image => {
+                const originalName = image.originalFile.name;
                 const nameParts = originalName.split('.');
                 nameParts.pop(); // remove extension
-                const newName = `${nameParts.join('.')}-comprimido.${fileData.compressedBlob.type.split('/')[1]}`;
-                zip.file(newName, fileData.compressedBlob);
+                const extension = image.outputType.split('/')[1];
+                const newName = `${nameParts.join('.')}-comprimido.${extension}`;
+                zip.file(newName, image.compressedBlob);
             });
             
             zip.generateAsync({type:"blob"}).then(function(content) {
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(content);
-                link.download = "imagenes_comprimidas.zip";
+                link.download = `imagenes-comprimidas-${Date.now()}.zip`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -301,31 +349,43 @@
         });
 
         startOverBtn.addEventListener('click', () => {
-            imageFiles = [];
+            imageStore = [];
             fileInput.value = '';
             resultScreen.style.display = 'none';
             uploadScreen.style.display = 'block';
             imageList.innerHTML = '';
+            updateTotalSummary();
         });
 
-        // --- Funciones de Utilidad ---
-        function formatBytes(bytes, decimals = 2) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        // --- Helper Functions ---
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
-
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = src;
+            });
+        }
+        function formatBytes(bytes, d = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes/Math.pow(k,i)).toFixed(d<0?0:d))} ${sizes[i]}`;
+        }
         function dataURLtoBlob(dataurl) {
             const arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
             bstr = atob(arr[1]);
             let n = bstr.length;
             const u8arr = new Uint8Array(n);
-            while (n--) {
-                u8arr[n] = bstr.charCodeAt(n);
-            }
+            while (n--) u8arr[n] = bstr.charCodeAt(n);
             return new Blob([u8arr], {type: mime});
         }
     </script>
