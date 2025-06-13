@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compresor de Imágenes Automático (50%)</title>
+    <title>Compresor de Imágenes Automático (Calidad Optimizada)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,7 +32,7 @@
         <!-- Título y Descripción -->
         <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Compresor de Imágenes Automático</h1>
-            <p class="text-gray-400 text-lg">Optimiza tus imágenes con una compresión fija del 50% al instante.</p>
+            <p class="text-gray-400 text-lg">Optimiza tus imágenes con una compresión balanceada para una excelente calidad y reducción de tamaño.</p>
         </div>
 
         <!-- Pantalla de Carga de Archivos -->
@@ -132,7 +132,7 @@
         // In-memory store and constants
         let imageStore = [];
         const VALID_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/tiff', 'image/svg+xml'];
-        const FIXED_QUALITY = 0.50; // Calidad fija para JPG y WEBP
+        const FIXED_QUALITY = 0.75; // Calidad optimizada para un buen balance
 
         // --- Event Listeners ---
         dragArea.addEventListener('dragover', (e) => { e.preventDefault(); dragArea.classList.add('active'); });
@@ -216,7 +216,8 @@
                     const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? FIXED_QUALITY : undefined);
                     const compressedBlob = dataURLtoBlob(compressedDataUrl);
                     
-                    if (outputType === 'image/png' && compressedBlob.size > originalFile.size) {
+                    // SMART SAFEGUARD: Never increase file size
+                    if (compressedBlob.size > originalFile.size) {
                         image.compressedBlob = originalFile;
                     } else {
                         image.compressedBlob = compressedBlob;
