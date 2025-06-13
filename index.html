@@ -57,7 +57,7 @@
         <!-- Título y Descripción -->
         <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-teal-400">Conversor y Compresor de Imágenes</h1>
-            <p class="text-gray-400 text-lg">Soporta JPG, PNG, WEBP, GIF, BMP y TIFF.</p>
+            <p class="text-gray-400 text-lg">Soporta JPG, PNG, WEBP, GIF, BMP, TIFF y SVG.</p>
         </div>
 
         <!-- Pantalla de Carga de Archivos -->
@@ -69,7 +69,7 @@
                 <button id="browseBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-2 font-semibold transition duration-300">
                     Seleccionar archivos
                 </button>
-                <input type="file" id="fileInput" class="hidden" accept="image/jpeg, image/png, image/webp, image/gif, image/bmp, image/tiff" multiple>
+                <input type="file" id="fileInput" class="hidden" accept="image/jpeg, image/png, image/webp, image/gif, image/bmp, image/tiff, image/svg+xml" multiple>
             </div>
             <p id="uploadError" class="text-red-500 text-center mt-4 hidden">Error: Por favor, sube un formato de imagen válido.</p>
         </div>
@@ -105,7 +105,7 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button id="downloadBtn" class="flex-1 text-center bg-green-600 hover:bg-green-700 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2 disabled:bg-gray-500 disabled:cursor-not-allowed">
                         <i class="fas fa-file-archive"></i>
-                        <span>Descargar Todo (ZIP)</span>
+                        <span>Descargar</span>
                     </button>
                     <button id="startOverBtn" class="flex-1 bg-gray-600 hover:bg-gray-500 rounded-lg px-8 py-3 font-semibold transition duration-300 flex items-center justify-center gap-2">
                         <i class="fas fa-sync-alt"></i>
@@ -120,7 +120,7 @@
     <template id="imageCardTemplate">
         <div class="card-container bg-gray-800 p-4 rounded-lg border border-gray-700">
             <div class="flex flex-col sm:flex-row items-center gap-4 mb-4">
-                <img class="thumbnail w-20 h-20 object-cover rounded-md bg-gray-700" src="https://placehold.co/80x80/2d3748/a0aec0?text=IMG" alt="miniatura">
+                <img class="thumbnail w-20 h-20 object-contain rounded-md bg-gray-700" src="https://placehold.co/80x80/2d3748/a0aec0?text=IMG" alt="miniatura">
                 <div class="flex-grow w-full">
                     <p class="filename font-semibold truncate text-center sm:text-left">nombre_de_archivo.jpg</p>
                     <div class="flex flex-wrap text-sm text-gray-400 gap-x-4 mt-1 justify-center sm:justify-start">
@@ -137,6 +137,7 @@
                         <option value="image/jpeg">JPG</option>
                         <option value="image/png">PNG</option>
                         <option value="image/webp">WEBP</option>
+                        <option value="image/svg+xml">SVG</option>
                     </select>
                 </div>
                 <div class="quality-control-container">
@@ -172,7 +173,7 @@
         
         // In-memory store for all image data and states
         let imageStore = [];
-        const VALID_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/tiff'];
+        const VALID_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/tiff', 'image/svg+xml'];
 
         // --- Drag & Drop / File Selection Logic ---
         dragArea.addEventListener('dragover', (e) => { e.preventDefault(); dragArea.classList.add('active'); });
@@ -199,32 +200,22 @@
             processingIndicator.style.display = 'block';
             downloadBtn.disabled = true;
 
-            const newFilesPromises = validFiles.map(async file => {
-                 const id = `img_${Date.now()}_${Math.random()}`;
+            const newFilesPromises = validFiles.map(file => {
+                const id = `img_${Date.now()}_${Math.random()}`;
                 const card = createCard(id, file);
                 imageList.appendChild(card);
                 
-                const imageData = {
-                    id: id,
-                    card: card,
-                    originalFile: file,
-                    outputType: 'image/jpeg',
-                    quality: 0.75,
-                    compressedBlob: null,
-                    thumbnailSrc: null
-                };
+                let defaultOutputType = 'image/jpeg';
+                if (file.type === 'image/png') defaultOutputType = 'image/png';
+                if (file.type === 'image/svg+xml') defaultOutputType = 'image/svg+xml';
 
-                if (file.type === 'image/png') {
-                    imageData.outputType = 'image/png';
-                }
-                card.querySelector('.format-select').value = imageData.outputType;
+                const imageData = { id, card, originalFile: file, outputType: defaultOutputType, quality: 0.75, compressedBlob: null, thumbnailSrc: null };
                 
                 imageStore.push(imageData);
                 return recompressImage(id);
             });
             
             await Promise.all(newFilesPromises);
-
             processingIndicator.style.display = 'none';
             downloadBtn.disabled = false;
         }
@@ -236,6 +227,27 @@
             card.querySelector('.filename').textContent = file.name;
             
             const formatSelect = card.querySelector('.format-select');
+            const qualityControl = card.querySelector('.quality-control-container');
+
+            // Configure options based on original file type
+            if (file.type === 'image/svg+xml') {
+                formatSelect.innerHTML = `<option value="image/svg+xml">SVG</option>`; // Only SVG option
+                formatSelect.value = 'image/svg+xml';
+                formatSelect.disabled = true;
+                qualityControl.style.display = 'none';
+            } else {
+                 // Ensure SVG option is not present for raster images
+                const svgOption = formatSelect.querySelector('option[value="image/svg+xml"]');
+                if(svgOption) svgOption.remove();
+                
+                if (file.type === 'image/png') {
+                    formatSelect.value = 'image/png';
+                } else {
+                    formatSelect.value = 'image/jpeg';
+                }
+                toggleQualitySlider(card, formatSelect.value);
+            }
+
             formatSelect.addEventListener('change', (e) => {
                 const image = imageStore.find(img => img.id === id);
                 image.outputType = e.target.value;
@@ -253,39 +265,50 @@
                 recompressImage(id);
             });
             
-            toggleQualitySlider(card, 'image/jpeg'); // Default state
             return card;
         }
         
         // --- Compression Logic ---
         function recompressImage(id) {
-             return new Promise(async (resolve) => {
+            return new Promise(async (resolve) => {
                 const image = imageStore.find(img => img.id === id);
                 if (!image) return resolve();
 
                 const { originalFile, outputType, quality } = image;
-
-                const dataUrl = image.thumbnailSrc || await readFileAsDataURL(originalFile);
-                if (!image.thumbnailSrc) {
-                    image.thumbnailSrc = dataUrl;
-                }
                 
-                const img = await loadImage(dataUrl);
-                const canvas = document.createElement('canvas');
-                canvas.width = img.naturalWidth;
-                canvas.height = img.naturalHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
+                // --- SVG COMPRESSION PATH ---
+                if (originalFile.type === 'image/svg+xml') {
+                    const svgText = await readFileAsText(originalFile);
+                    // Basic minification
+                    let minifiedSvg = svgText
+                        .replace(/<!--[\s\S]*?-->/g, "") // remove comments
+                        .replace(/>\s{1,}</g, "><") // remove whitespace between tags
+                        .replace(/\s{2,}/g, " ") // collapse whitespace
+                        .trim();
+                    
+                    image.compressedBlob = new Blob([minifiedSvg], { type: 'image/svg+xml' });
+                    image.thumbnailSrc = `data:image/svg+xml;base64,${btoa(svgText)}`;
 
-                const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? quality : undefined);
-                const compressedBlob = dataURLtoBlob(compressedDataUrl);
-                
-                // *** INTELLIGENT PNG LOGIC ***
-                // If output is PNG and the new file is larger, use the original file instead.
-                if (outputType === 'image/png' && compressedBlob.size > originalFile.size) {
-                    image.compressedBlob = originalFile;
+                // --- RASTER IMAGE COMPRESSION PATH ---
                 } else {
-                    image.compressedBlob = compressedBlob;
+                    const dataUrl = image.thumbnailSrc || await readFileAsDataURL(originalFile);
+                    if (!image.thumbnailSrc) image.thumbnailSrc = dataUrl;
+                    
+                    const img = await loadImage(dataUrl);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+
+                    const compressedDataUrl = canvas.toDataURL(outputType, ['image/jpeg', 'image/webp'].includes(outputType) ? quality : undefined);
+                    const compressedBlob = dataURLtoBlob(compressedDataUrl);
+                    
+                    if (outputType === 'image/png' && compressedBlob.size > originalFile.size) {
+                        image.compressedBlob = originalFile;
+                    } else {
+                        image.compressedBlob = compressedBlob;
+                    }
                 }
                 
                 updateCardUI(image);
@@ -331,7 +354,6 @@
             const totalReductionValue = totalOriginal > 0 ? 100 - (totalCompressed / totalOriginal * 100) : 0;
             totalReduction.textContent = `${totalReductionValue.toFixed(1)}%`;
             
-            // Dynamically change download button text and icon
             const buttonSpan = downloadBtn.querySelector('span');
             const buttonIcon = downloadBtn.querySelector('i');
             if (imageStore.length === 1) {
@@ -353,10 +375,9 @@
             if (imageStore.length === 0 || !imageStore.every(img => img.compressedBlob)) return;
 
             if (imageStore.length === 1) {
-                // Single image download
                 const image = imageStore[0];
+                const extension = image.compressedBlob.type.split('/')[1].replace('+xml', '');
                 const originalName = image.originalFile.name.split('.').slice(0, -1).join('.');
-                const extension = image.outputType.split('/')[1];
                 const newName = `${originalName}-comprimido.${extension}`;
                 
                 const link = document.createElement('a');
@@ -368,11 +389,10 @@
                 URL.revokeObjectURL(link.href);
 
             } else {
-                // Multiple images download as ZIP
                 const zip = new JSZip();
                 imageStore.forEach(image => {
+                    const extension = image.compressedBlob.type.split('/')[1].replace('+xml', '');
                     const originalName = image.originalFile.name.split('.').slice(0, -1).join('.');
-                    const extension = image.outputType.split('/')[1];
                     const newName = `${originalName}-comprimido.${extension}`;
                     zip.file(newName, image.compressedBlob);
                 });
@@ -405,6 +425,14 @@
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = reject;
                 reader.readAsDataURL(file);
+            });
+        }
+        function readFileAsText(file) {
+             return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
             });
         }
         function loadImage(src) {
