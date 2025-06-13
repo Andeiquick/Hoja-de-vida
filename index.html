@@ -141,8 +141,8 @@
                     </select>
                 </div>
                 <div class="quality-control-container">
-                    <label class="block text-sm font-medium text-gray-400 mb-1">Calidad: <span class="quality-value">0.92</span></label>
-                    <input type="range" class="quality-slider w-full" min="0.01" max="0.92" step="0.01" value="0.92">
+                    <label class="block text-sm font-medium text-gray-400 mb-1">Calidad: <span class="quality-value">0.75</span></label>
+                    <input type="range" class="quality-slider w-full" min="0.01" max="0.75" step="0.01" value="0.75">
                 </div>
             </div>
         </div>
@@ -174,7 +174,7 @@
         // In-memory store for all image data and states
         let imageStore = [];
         const VALID_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp', 'image/tiff', 'image/svg+xml'];
-        const INITIAL_QUALITY = 0.92;
+        const INITIAL_QUALITY = 0.75; // << CAMBIO CLAVE: Compresión inicial más fuerte
 
         // --- Drag & Drop / File Selection Logic ---
         dragArea.addEventListener('dragover', (e) => { e.preventDefault(); dragArea.classList.add('active'); });
@@ -232,14 +232,14 @@
             const qualitySlider = card.querySelector('.quality-slider');
             const qualityValue = card.querySelector('.quality-value');
 
-            // Set initial quality values
+            // Set initial quality values based on the new constant
             qualitySlider.value = INITIAL_QUALITY;
-            qualitySlider.max = INITIAL_QUALITY;
+            qualitySlider.max = INITIAL_QUALITY; // << CAMBIO CLAVE: Limita el máximo del slider
             qualityValue.textContent = INITIAL_QUALITY;
 
             // Configure options based on original file type
             if (file.type === 'image/svg+xml') {
-                formatSelect.innerHTML = `<option value="image/svg+xml">SVG</option>`; // Only SVG option
+                formatSelect.innerHTML = `<option value="image/svg+xml">SVG</option>`;
                 formatSelect.value = 'image/svg+xml';
                 formatSelect.disabled = true;
                 qualityControl.style.display = 'none';
