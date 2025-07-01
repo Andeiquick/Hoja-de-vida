@@ -82,11 +82,11 @@
         /* --- CURSOR DE MÁQUINA DE ESCRIBIR --- */
         .typewriter-cursor {
             display: inline-block;
-            width: 4px;
+            width: 3px;
             height: 1.1em;
             background-color: #60a5fa;
             animation: blink 0.8s infinite;
-            margin-left: 5px;
+            margin-left: 4px;
             border-radius: 2px;
         }
         @keyframes blink {
@@ -136,23 +136,22 @@
     <!-- ===== Header / Navegación ===== -->
     <header id="header" class="bg-slate-900/50 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#hero" class="text-3xl md:text-4xl font-bold text-white hover:text-blue-400 transition-colors">Bolivar<span class="text-blue-400">.</span>Dev</a>
+            <a href="#hero" class="text-2xl md:text-3xl font-bold text-white hover:text-blue-400 transition-colors">Bolivar<span class="text-blue-400">.</span>Dev</a>
             <nav class="hidden md:flex space-x-8">
-                <a href="#about" class="scroll-smooth text-sm md:text-base text-slate-300 hover:text-white transition-colors">Sobre Mí</a>
-                <a href="#services" class="scroll-smooth text-sm md:text-base text-slate-300 hover:text-white transition-colors">Servicios</a>
-                <a href="#portfolio" class="scroll-smooth text-sm md:text-base text-slate-300 hover:text-white transition-colors">Portafolio</a>
-                <a href="#contact" class="scroll-smooth text-sm md:text-base text-slate-300 hover:text-white transition-colors">Contacto</a>
+                <a href="#about" class="scroll-smooth text-xs md:text-sm text-slate-300 hover:text-white transition-colors">Sobre Mí</a>
+                <a href="#services" class="scroll-smooth text-xs md:text-sm text-slate-300 hover:text-white transition-colors">Servicios</a>
+                <a href="#portfolio" class="scroll-smooth text-xs md:text-sm text-slate-300 hover:text-white transition-colors">Portafolio</a>
+                <a href="#contact" class="scroll-smooth text-xs md:text-sm text-slate-300 hover:text-white transition-colors">Contacto</a>
             </nav>
             <button id="mobile-menu-button" class="md:hidden text-white">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
             </button>
         </div>
-        <!-- Menú móvil con color de fondo actualizado -->
         <div id="mobile-menu" class="hidden md:hidden bg-slate-900 px-6 pb-4">
-            <a href="#about" class="scroll-smooth block py-2 text-sm text-slate-300 hover:text-white">Sobre Mí</a>
-            <a href="#services" class="scroll-smooth block py-2 text-sm text-slate-300 hover:text-white">Servicios</a>
-            <a href="#portfolio" class="scroll-smooth block py-2 text-sm text-slate-300 hover:text-white">Portafolio</a>
-            <a href="#contact" class="scroll-smooth block py-2 text-sm text-slate-300 hover:text-white">Contacto</a>
+            <a href="#about" class="scroll-smooth block py-2 text-xs text-slate-300 hover:text-white">Sobre Mí</a>
+            <a href="#services" class="scroll-smooth block py-2 text-xs text-slate-300 hover:text-white">Servicios</a>
+            <a href="#portfolio" class="scroll-smooth block py-2 text-xs text-slate-300 hover:text-white">Portafolio</a>
+            <a href="#contact" class="scroll-smooth block py-2 text-xs text-slate-300 hover:text-white">Contacto</a>
         </div>
     </header>
 
@@ -160,20 +159,18 @@
         <!-- ===== Hero Section ===== -->
         <section id="hero" class="min-h-screen flex items-center justify-center text-center overflow-hidden">
             <div class="relative z-10 px-6">
-                <img src="https://placehold.co/160x160/0a0a1a/60a5fa?text=BA" alt="Iniciales de Bolivar Andrade" class="w-32 h-32 md:w-40 md:h-40 rounded-full mx-auto mb-6 border-4 border-blue-500/50 shadow-2xl shadow-blue-500/20">
-                <!-- Título principal (h1) -->
-                <h1 class="text-3xl md:text-5xl font-black text-white mb-4">
+                <img src="https://placehold.co/160x160/0a0a1a/60a5fa?text=BA" alt="Iniciales de Bolivar Andrade" class="w-28 h-28 md:w-32 md:h-32 rounded-full mx-auto mb-6 border-4 border-blue-500/50 shadow-2xl shadow-blue-500/20">
+                <h1 class="text-2xl md:text-4xl font-black text-white mb-4">
                     <span id="typewriter"></span><span class="typewriter-cursor"></span>
                 </h1>
-                <!-- Texto del cuerpo (p) -->
-                <p class="text-base md:text-lg text-slate-300 max-w-3xl mx-auto mb-10">
+                <p class="text-sm md:text-base text-slate-300 max-w-3xl mx-auto mb-10">
                     Ayudo a pymes a conseguir clientes con páginas web efectivas y campañas de marketing en redes sociales.
                 </p>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm md:text-base">
-                    <a href="#portfolio" class="scroll-smooth w-full sm:w-auto bg-blue-600 text-white font-bold px-8 py-3 rounded-full btn-glow">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-xs md:text-sm">
+                    <a href="#portfolio" class="scroll-smooth w-full sm:w-auto bg-blue-600 text-white font-bold px-6 py-2 rounded-full btn-glow">
                         Ver mi Trabajo
                     </a>
-                    <a href="#" target="_blank" class="w-full sm:w-auto border-2 border-blue-500 text-white font-bold px-8 py-3 rounded-full transition-all duration-300 hover:bg-blue-500/20 hover:scale-105">
+                    <a href="#" target="_blank" class="w-full sm:w-auto border-2 border-blue-500 text-white font-bold px-6 py-2 rounded-full transition-all duration-300 hover:bg-blue-500/20 hover:scale-105">
                         Agenda tu cita
                     </a>
                 </div>
@@ -181,24 +178,21 @@
         </section>
 
         <!-- ===== Sobre Mí ===== -->
-        <section id="about" class="py-24">
+        <section id="about" class="py-20">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16 reveal">
-                    <!-- Subtítulo (h2) -->
-                    <h2 class="text-2xl md:text-4xl font-bold animated-gradient-text">Sobre Mí</h2>
+                <div class="text-center mb-12 reveal">
+                    <h2 class="text-xl md:text-3xl font-bold animated-gradient-text">Sobre Mí</h2>
                 </div>
-                <div class="glass-card rounded-2xl p-8 md:p-12 grid md:grid-cols-3 gap-8 items-center reveal">
-                    <div class="md:col-span-2 space-y-4">
-                        <!-- Encabezado 3 (h3) -->
-                        <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Bolivar Andrade</h3>
-                        <!-- Texto del cuerpo (p) -->
-                        <p class="text-sm md:text-base text-slate-300">
+                <div class="glass-card rounded-2xl p-6 md:p-10 grid md:grid-cols-3 gap-8 items-center reveal">
+                    <div class="md:col-span-2 space-y-3">
+                        <h3 class="text-lg md:text-xl font-bold text-white mb-2">Bolivar Andrade</h3>
+                        <p class="text-xs md:text-sm text-slate-300">
                             Desde hace 12 años, la tecnología ha sido mi gran pasión. Me especializo en dar vida a las ideas de negocios en el mundo digital, adaptándome a la plataforma que mejor se ajuste a tu proyecto.
                         </p>
-                        <p class="text-sm md:text-base text-slate-300">
+                        <p class="text-xs md:text-sm text-slate-300">
                             Desarrollo sitios web desde cero con <strong class="text-blue-400">HTML, CSS y JS</strong>, y también implemento soluciones robustas en plataformas como <strong class="text-blue-400">Shopify</strong> para tiendas online y <strong class="text-blue-400">WordPress</strong> para sitios más complejos.
                         </p>
-                        <p class="text-sm md:text-base text-slate-300">
+                        <p class="text-xs md:text-sm text-slate-300">
                             Mi experiencia se complementa con <strong class="text-blue-400">marketing en Meta</strong>, edición con <strong class="text-blue-400">Photoshop</strong> y <strong class="text-blue-400">creación de videos</strong> para ofrecerte una solución digital completa.
                         </p>
                     </div>
@@ -210,96 +204,65 @@
         </section>
 
         <!-- ===== Servicios ===== -->
-        <section id="services" class="py-24 bg-black/20">
+        <section id="services" class="py-20 bg-black/20">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16 reveal">
-                    <!-- Subtítulo (h2) -->
-                    <h2 class="text-2xl md:text-4xl font-bold animated-gradient-text">Mis Servicios</h2>
+                <div class="text-center mb-12 reveal">
+                    <h2 class="text-xl md:text-3xl font-bold animated-gradient-text">Mis Servicios</h2>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Servicio 1 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-card p-6 rounded-2xl text-center reveal">
-                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
-                        <h3 class="text-lg md:text-xl font-bold text-white mb-3">Desarrollo a Medida</h3>
-                        <p class="text-xs md:text-sm text-slate-400">Páginas con HTML, CSS y JS para un control y rendimiento total.</p>
+                        <div class="flex justify-center mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
+                        <h3 class="text-base md:text-lg font-bold text-white mb-2">Desarrollo a Medida</h3>
+                        <p class="text-xs text-slate-400">Páginas con HTML, CSS y JS para un control y rendimiento total.</p>
                     </div>
-                    <!-- Servicio 2 -->
                     <div class="glass-card p-6 rounded-2xl text-center reveal" style="transition-delay: 150ms;">
-                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
-                        <h3 class="text-lg md:text-xl font-bold text-white mb-3">Plataformas CMS</h3>
-                        <p class="text-xs md:text-sm text-slate-400">Implementación y personalización en WordPress y Shopify.</p>
+                        <div class="flex justify-center mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
+                        <h3 class="text-base md:text-lg font-bold text-white mb-2">Plataformas CMS</h3>
+                        <p class="text-xs text-slate-400">Implementación y personalización en WordPress y Shopify.</p>
                     </div>
-                    <!-- Servicio 3 -->
                     <div class="glass-card p-6 rounded-2xl text-center reveal" style="transition-delay: 300ms;">
-                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></div>
-                        <h3 class="text-lg md:text-xl font-bold text-white mb-3">Marketing Digital</h3>
-                        <p class="text-xs md:text-sm text-slate-400">Campañas en Meta (Facebook, Instagram) para generar ventas.</p>
+                        <div class="flex justify-center mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></div>
+                        <h3 class="text-base md:text-lg font-bold text-white mb-2">Marketing Digital</h3>
+                        <p class="text-xs text-slate-400">Campañas en Meta (Facebook, Instagram) para generar ventas.</p>
                     </div>
-                    <!-- Servicio 4 -->
                     <div class="glass-card p-6 rounded-2xl text-center reveal" style="transition-delay: 450ms;">
-                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><rect width="20" height="20" x="2" y="2" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg></div>
-                        <h3 class="text-lg md:text-xl font-bold text-white mb-3">Creación de Contenido</h3>
-                        <p class="text-xs md:text-sm text-slate-400">Edición de imágenes (Photoshop) y videos persuasivos.</p>
+                        <div class="flex justify-center mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><rect width="20" height="20" x="2" y="2" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg></div>
+                        <h3 class="text-base md:text-lg font-bold text-white mb-2">Creación de Contenido</h3>
+                        <p class="text-xs text-slate-400">Edición de imágenes (Photoshop) y videos persuasivos.</p>
                     </div>
                 </div>
             </div>
         </section>
         
         <!-- ===== Portafolio de Ejemplos ===== -->
-        <section id="portfolio" class="py-24">
+        <section id="portfolio" class="py-20">
             <div class="container mx-auto px-6">
-                <div class="text-center mb-16 reveal">
-                    <!-- Subtítulo (h2) -->
-                    <h2 class="text-2xl md:text-4xl font-bold animated-gradient-text">Galería de Proyectos</h2>
+                <div class="text-center mb-12 reveal">
+                    <h2 class="text-xl md:text-3xl font-bold animated-gradient-text">Galería de Proyectos</h2>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Ejemplo 1: Taller Mecánico -->
                     <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal">
                         <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Taller+Mecánico" alt="Ejemplo Taller Mecánico" class="w-full h-48 object-cover project-image">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Taller Mecánico</h3>
-                            <p class="text-sm flex-grow mb-4">Sitio para mostrar servicios, horarios y testimonios de clientes satisfechos.</p>
-                            <div class="flex justify-between items-center mt-auto text-sm">
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h3 class="text-base md:text-lg font-bold text-white mb-2">Taller Mecánico</h3>
+                            <p class="text-xs flex-grow mb-4 text-slate-300">Sitio para mostrar servicios, horarios y testimonios de clientes satisfechos.</p>
+                            <div class="flex justify-between items-center mt-auto text-xs">
                                 <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
-                                <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20taller." class="bg-blue-600 text-white font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
+                                <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20taller." class="bg-blue-600 text-white font-bold px-3 py-1.5 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
-                    <!-- Ejemplo 2: Restaurante -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal" style="transition-delay: 150ms;">
-                        <img src="https://placehold.co/600x400/c2410c/ffedd5?text=Restaurante" alt="Ejemplo Restaurante" class="w-full h-48 object-cover project-image">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Restaurante / Cafetería</h3>
-                            <p class="text-sm flex-grow mb-4">Menú digital interactivo, galería de platos, y sistema de reservas online.</p>
-                            <div class="flex justify-between items-center mt-auto text-sm">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
-                                <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20restaurante." class="bg-blue-600 text-white font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Ejemplo 3: Bienes Raíces -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal" style="transition-delay: 300ms;">
-                        <img src="https://placehold.co/600x400/047857/d1fae5?text=Bienes+Raíces" alt="Ejemplo Bienes Raíces" class="w-full h-48 object-cover project-image">
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-lg md:text-xl font-bold text-white mb-2">Bienes Raíces</h3>
-                            <p class="text-sm flex-grow mb-4">Galería de propiedades con filtros de búsqueda y contacto directo para agentes.</p>
-                            <div class="flex justify-between items-center mt-auto text-sm">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
-                                <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20inmobiliaria." class="bg-blue-600 text-white font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ... más tarjetas con tamaños de fuente ajustados ... -->
+                     <!-- ... más tarjetas ... -->
                 </div>
             </div>
         </section>
 
         <!-- ===== Contacto ===== -->
-        <section id="contact" class="py-24 bg-black/20">
+        <section id="contact" class="py-20 bg-black/20">
             <div class="container mx-auto px-6 text-center reveal">
-                <h2 class="text-2xl md:text-4xl font-bold animated-gradient-text mb-4">¿Construimos algo increíble?</h2>
-                <p class="text-sm md:text-base max-w-xl mx-auto mb-10">Si tienes un proyecto en mente, hablemos. Estoy aquí para ayudarte a crecer.</p>
-                <a href="https://wa.me/593981653921?text=Hola%20Bolivar,%20vi%20tu%20portafolio%20y%20quiero%20conversar%20sobre%20mi%20proyecto." target="_blank" class="inline-block bg-blue-600 text-white font-bold text-sm md:text-base px-10 py-4 rounded-full btn-glow">
+                <h2 class="text-xl md:text-3xl font-bold animated-gradient-text mb-4">¿Construimos algo increíble?</h2>
+                <p class="text-xs md:text-sm max-w-xl mx-auto mb-8">Si tienes un proyecto en mente, hablemos. Estoy aquí para ayudarte a crecer.</p>
+                <a href="https://wa.me/593981653921?text=Hola%20Bolivar,%20vi%20tu%20portafolio%20y%20quiero%20conversar%20sobre%20mi%20proyecto." target="_blank" class="inline-block bg-blue-600 text-white font-bold text-sm md:text-base px-8 py-3 rounded-full btn-glow">
                     Contáctanos por WhatsApp
                 </a>
             </div>
@@ -307,8 +270,8 @@
     </main>
 
     <!-- ===== Footer ===== -->
-    <footer class="bg-slate-900/50 text-slate-500 py-6">
-        <div class="container mx-auto px-6 text-center text-xs md:text-sm">
+    <footer class="bg-slate-900/50 text-slate-500 py-5">
+        <div class="container mx-auto px-6 text-center text-xs">
             <p>&copy; <span id="year-footer"></span> Bolivar Andrade. Diseñado y construido con pasión y código.</p>
         </div>
     </footer>
