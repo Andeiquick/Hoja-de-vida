@@ -100,6 +100,42 @@
         @keyframes blink {
             50% { opacity: 0; }
         }
+
+        /* --- NUEVAS ANIMACIONES SUTILES --- */
+        .link-underline {
+            position: relative;
+            text-decoration: none;
+            padding-bottom: 2px;
+        }
+        .link-underline::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: #60a5fa;
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+        .link-underline:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        .service-icon {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card:hover .service-icon {
+            transform: scale(1.1) rotate(-8deg);
+        }
+        .project-image {
+            transition: transform 0.4s ease, filter 0.4s ease;
+        }
+        .glass-card:hover .project-image {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -184,21 +220,25 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <!-- Servicio 1 -->
                     <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray">
+                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg></div>
                         <h3 class="text-xl font-bold text-white mb-3 print-text-black">Desarrollo a Medida</h3>
                         <p class="text-slate-400 text-sm print-text-black">Páginas con HTML, CSS y JS para un control y rendimiento total.</p>
                     </div>
                     <!-- Servicio 2 -->
-                    <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray" style="transition-delay: 100ms;">
+                    <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray" style="transition-delay: 150ms;">
+                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
                         <h3 class="text-xl font-bold text-white mb-3 print-text-black">Plataformas CMS</h3>
                         <p class="text-slate-400 text-sm print-text-black">Implementación y personalización en WordPress y Shopify.</p>
                     </div>
                     <!-- Servicio 3 -->
-                    <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray" style="transition-delay: 200ms;">
+                    <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray" style="transition-delay: 300ms;">
+                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></div>
                         <h3 class="text-xl font-bold text-white mb-3 print-text-black">Marketing Digital</h3>
                         <p class="text-slate-400 text-sm print-text-black">Campañas en Meta (Facebook, Instagram) para generar ventas.</p>
                     </div>
                     <!-- Servicio 4 -->
-                    <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray" style="transition-delay: 300ms;">
+                    <div class="glass-card p-6 rounded-2xl text-center reveal print-bg-white print-border-gray" style="transition-delay: 450ms;">
+                        <div class="flex justify-center mb-4"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="service-icon text-blue-400"><rect width="20" height="20" x="2" y="2" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg></div>
                         <h3 class="text-xl font-bold text-white mb-3 print-text-black">Creación de Contenido</h3>
                         <p class="text-slate-400 text-sm print-text-black">Edición de imágenes (Photoshop) y videos persuasivos.</p>
                     </div>
@@ -215,108 +255,108 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Ejemplo 1: Taller Mecánico -->
                     <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray">
-                        <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Taller+Mecánico" alt="Ejemplo Taller Mecánico" class="w-full h-48 object-cover">
+                        <img src="https://placehold.co/600x400/1f2937/9ca3af?text=Taller+Mecánico" alt="Ejemplo Taller Mecánico" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Taller Mecánico</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Sitio para mostrar servicios, horarios y testimonios de clientes satisfechos.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20taller." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                     <!-- Ejemplo 2: Restaurante -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 100ms;">
-                        <img src="https://placehold.co/600x400/c2410c/ffedd5?text=Restaurante" alt="Ejemplo Restaurante" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 150ms;">
+                        <img src="https://placehold.co/600x400/c2410c/ffedd5?text=Restaurante" alt="Ejemplo Restaurante" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Restaurante / Cafetería</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Menú digital interactivo, galería de platos, y sistema de reservas online.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20restaurante." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                     <!-- Ejemplo 3: Bienes Raíces -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 200ms;">
-                        <img src="https://placehold.co/600x400/047857/d1fae5?text=Bienes+Raíces" alt="Ejemplo Bienes Raíces" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 300ms;">
+                        <img src="https://placehold.co/600x400/047857/d1fae5?text=Bienes+Raíces" alt="Ejemplo Bienes Raíces" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Bienes Raíces</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Galería de propiedades con filtros de búsqueda y contacto directo para agentes.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20inmobiliaria." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                     <!-- Ejemplo 4: Tienda de Ropa -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 300ms;">
-                        <img src="https://placehold.co/600x400/be185d/fce7f3?text=Boutique" alt="Ejemplo Tienda de Ropa" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 450ms;">
+                        <img src="https://placehold.co/600x400/be185d/fce7f3?text=Boutique" alt="Ejemplo Tienda de Ropa" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Tienda de Ropa</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Catálogo elegante con Shopify, integración de pagos y conexión con Instagram.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20tienda%20online." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                      <!-- Ejemplo 5: Barbería -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 400ms;">
-                        <img src="https://placehold.co/600x400/713f12/fefce8?text=Barbería" alt="Ejemplo Barbería" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 600ms;">
+                        <img src="https://placehold.co/600x400/713f12/fefce8?text=Barbería" alt="Ejemplo Barbería" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Peluquería / Barbería</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Sistema de turnos online, galería de estilos y perfiles de los estilistas.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20barbería." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                      <!-- Ejemplo 6: Negocio de Eventos -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 500ms;">
-                        <img src="https://placehold.co/600x400/86198f/fae8ff?text=Eventos" alt="Ejemplo Negocio de Eventos" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 750ms;">
+                        <img src="https://placehold.co/600x400/86198f/fae8ff?text=Eventos" alt="Ejemplo Negocio de Eventos" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Negocio de Eventos</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Galería de trabajos anteriores, descripción de paquetes y contacto directo.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20negocio%20de%20eventos." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                     <!-- Ejemplo 7: Odontología -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 600ms;">
-                        <img src="https://placehold.co/600x400/0ea5e9/f0f9ff?text=Odontología" alt="Ejemplo Clínica Dental" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 900ms;">
+                        <img src="https://placehold.co/600x400/0ea5e9/f0f9ff?text=Odontología" alt="Ejemplo Clínica Dental" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Clínica Dental</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Web profesional para agendar citas, mostrar servicios y generar confianza.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20clínica%20dental." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                     <!-- Ejemplo 8: Abogado -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 700ms;">
-                        <img src="https://placehold.co/600x400/475569/e2e8f0?text=Abogados" alt="Ejemplo Estudio Jurídico" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 1050ms;">
+                        <img src="https://placehold.co/600x400/475569/e2e8f0?text=Abogados" alt="Ejemplo Estudio Jurídico" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Estudio Jurídico</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Sitio web sobrio y profesional para presentar especialidades y atraer nuevos casos.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20estudio%20de%20abogados." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
                     </div>
                     <!-- Ejemplo 9: Salón de Uñas -->
-                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 800ms;">
-                        <img src="https://placehold.co/600x400/ec4899/fdf2f8?text=Manicure" alt="Ejemplo Salón de Uñas" class="w-full h-48 object-cover">
+                    <div class="glass-card rounded-2xl overflow-hidden flex flex-col reveal print-bg-white print-border-gray" style="transition-delay: 1200ms;">
+                        <img src="https://placehold.co/600x400/ec4899/fdf2f8?text=Manicure" alt="Ejemplo Salón de Uñas" class="w-full h-48 object-cover project-image">
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-xl font-bold text-white mb-2 print-text-black">Salón de Uñas</h3>
                             <p class="text-slate-300 text-sm mb-4 flex-grow print-text-black">Muestra tus diseños, gestiona reservas por WhatsApp y atrae más clientas.</p>
                             <div class="flex justify-between items-center mt-auto no-print">
-                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">Ver Demo</a>
+                                <a href="#" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors link-underline">Ver Demo</a>
                                 <a href="https://wa.me/593981653921?text=Hola,%20quisiera%20cotizar%20una%20web%20para%20mi%20salón%20de%20uñas." class="bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-full btn-glow">Cotizar</a>
                             </div>
                         </div>
